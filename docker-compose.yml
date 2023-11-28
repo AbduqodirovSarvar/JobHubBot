@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    ports:
+      - "8443:8443"
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=JoboHubBot;User Id=postgres;Password=12345
+      - BotConfiguration__BotToken=6780512045:AAGxGfF7_EwhKKfp4CKufk2x4eZgJ15QJSY
+      - BotConfiguration__HostAddress=https://7e47-89-236-218-41.ngrok-free.app
+      - BotConfiguration__SecretKey=qwertyuiop
+      - BotConfiguration__Route=/api/bot
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8443
+    networks:
+      - JoboHub
+
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    container_name: db
+    environment:
+      POSTGRES_DB: JoboHubBot
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+    ports:
+      - "5432:5432"
+    volumes:
+      - data:/var/lib/postgresql/data
+    networks:
+      - JoboHub
+volumes:
+  data:
+networks:
+  JoboHub:
+    driver: bridge  
