@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace JobHubBot.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231128141839_Initial")]
+    [Migration("20231129203504_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -65,10 +65,6 @@ namespace JobHubBot.Migrations
                     b.Property<DateTime>("CreatedTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("text");
@@ -81,6 +77,10 @@ namespace JobHubBot.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Resume")
                         .IsRequired()
                         .HasColumnType("text");
 

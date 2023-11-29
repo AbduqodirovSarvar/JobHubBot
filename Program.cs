@@ -1,42 +1,41 @@
 using JobHubBot.Controllers;
+using JobHubBot.Db.DbContexts;
 using JobHubBot.Models.Telegram;
 using JobHubBot.Services.Configurations;
-using Telegram.Bot;
+using Microsoft.EntityFrameworkCore;
 
-var builder = WebApplication.CreateBuilder(args);
+var applicationBuilder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Services are added to the container here.
+applicationBuilder.Services.AddControllers();
+applicationBuilder.Services.Services(applicationBuilder.Configuration);
+applicationBuilder.Services.AddEndpointsApiExplorer();
+applicationBuilder.Services.AddSwaggerGen();
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.Services(builder.Configuration);
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+var application = applicationBuilder.Build();
 
-var app = builder.Build();
-
-app.UseCors(options =>
+application.UseCors(options =>
 {
     options.AllowAnyOrigin()
         .AllowAnyMethod()
         .AllowAnyHeader();
 });
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// HTTP request pipeline configuration.
+if (application.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    application.UseSwagger();
+    application.UseSwaggerUI();
 }
 
-app.UseRouting();
+application.UseRouting();
 
-app.UseEndpoints(endpoints =>
+application.UseEndpoints(endpoints =>
 {
     var controllerName = typeof(BotController).Name.Replace("Controller", "", StringComparison.Ordinal);
     var actionName = typeof(BotController).GetMethods()[0].Name;
 
-    string? pattern = builder.Configuration.GetSection(BotConfiguration.RouteSection).Value;
+    string? pattern = applicationBuilder.Configuration.GetSection(BotConfiguration.RouteSection).Value;
 
     endpoints.MapControllerRoute(
             name: "jobohub",
@@ -46,8 +45,18 @@ app.UseEndpoints(endpoints =>
     endpoints.MapControllers();
 });
 
-app.UseHttpsRedirection();
+using (var scope = application.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<AppDbContext>();
 
-app.MapControllers();
+    // Apply all pending migrations
+    context.Database.Migrate();
+}
 
-app.Run();
+
+application.UseHttpsRedirection();
+
+application.MapControllers();
+
+application.Run();

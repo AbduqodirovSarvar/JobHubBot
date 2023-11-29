@@ -36,7 +36,7 @@ namespace JobHubBot.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     FirstName = table.Column<string>(type: "text", nullable: false),
                     LastName = table.Column<string>(type: "text", nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: false),
+                    Resume = table.Column<string>(type: "text", nullable: false),
                     Phone = table.Column<string>(type: "text", nullable: false),
                     Language = table.Column<int>(type: "integer", nullable: false),
                     CreatedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)

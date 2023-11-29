@@ -19,7 +19,7 @@ namespace JobHubBot.Controllers
             }
             catch (Exception ex)
             {
-                await handleUpdateService.HandleErrorAsync(ex, cancellationToken);
+                await handleUpdateService.HandleErrorAsync(ex);
                 return BadRequest(ex.Message);
             }
         }

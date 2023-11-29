@@ -15,15 +15,12 @@ namespace JobHubBot.Services.KeyboardServices
                     buttonRows.Add(buttons.ToArray());
                     buttons.Clear();
                 }
-
                 buttons.Add(InlineKeyboardButton.WithCallbackData(name.ToString(), name.ToLower()));
             }
-
             if (buttons.Count > 0)
             {
                 buttonRows.Add(buttons.ToArray());
             }
-
             return new InlineKeyboardMarkup(buttonRows.ToArray());
         }
     }

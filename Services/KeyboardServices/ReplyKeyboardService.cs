@@ -5,7 +5,7 @@ namespace JobHubBot.Services.KeyboardServices
 {
     public class ReplyKeyboardService
     {
-        public static ReplyKeyboardMarkup MakingKeyboard(List<string> names, int? rows = 2)
+        public static ReplyKeyboardMarkup MakeReplyKeyboard(List<string> names, int? rows = 2)
         {
             List<KeyboardButton[]> buttonRows = new();
             List<KeyboardButton> buttons = new();
@@ -16,15 +16,12 @@ namespace JobHubBot.Services.KeyboardServices
                     buttonRows.Add(buttons.ToArray());
                     buttons.Clear();
                 }
-
                 buttons.Add(new KeyboardButton(name.ToString()));
             }
-
             if (buttons.Count > 0)
             {
                 buttonRows.Add(buttons.ToArray());
             }
-
             return new ReplyKeyboardMarkup(buttonRows.ToArray()) { ResizeKeyboard = true };
         }
     }

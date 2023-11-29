@@ -23,5 +23,6 @@ namespace JobHubBot.Db.DbContexts
             modelBuilder.Entity<UserJobs>()
                 .HasKey(uj => new { uj.UserId, uj.JobId });
         }
+
     }
 }

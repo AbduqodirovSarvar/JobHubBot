@@ -22,13 +22,13 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.4" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.11" />
+    <PackageReference Include="StackExchange.Redis" Version="2.7.4" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageReference Include="Telegram.Bot" Version="19.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services\Registrations\" />
-    <Folder Include="Services\SendMessageServices\" />
+    <Folder Include="Files\" />
   </ItemGroup>
 
 </Project>
