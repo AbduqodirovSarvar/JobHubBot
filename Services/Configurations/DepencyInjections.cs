@@ -1,13 +1,15 @@
 ﻿using JobHubBot.Db.DbContexts;
 using JobHubBot.Interfaces;
+using JobHubBot.Interfaces.IDbInterfaces;
+using JobHubBot.Interfaces.IHandlerServiceInterfaces;
 using JobHubBot.Models.Telegram;
 using JobHubBot.Services.CacheServices;
 using JobHubBot.Services.HandleServices;
-using JobHubBot.Services.SendMessageServices;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using StackExchange.Redis;
 using Telegram.Bot;
-using IDatabase = StackExchange.Redis.IDatabase;
 
 namespace JobHubBot.Services.Configurations
 {
@@ -27,6 +29,8 @@ namespace JobHubBot.Services.Configurations
             services.AddScoped<IAppDbContext, AppDbContext>();
 
             services.AddControllers().AddNewtonsoftJson();
+            services.AddSingleton<IConnectionMultiplexer>
+                (ConnectionMultiplexer.Connect(configuration.GetConnectionString("Redis") ?? "localhost"));
 
             services.AddHttpClient("jobohub")
                 .AddTypedClient<ITelegramBotClient>((httpClient, sp) =>
@@ -38,26 +42,28 @@ namespace JobHubBot.Services.Configurations
 
             services.AddHostedService<ConfigureWebhook>();
 
-            services.AddScoped<UpdateHandlers>();
-            services.AddScoped<RegisterService>();
-            services.AddScoped<MainServices>();
-            services.AddScoped<StateMemoryService>();
-            services.AddScoped<JobNotifier>();
-            services.AddScoped<SendAdvertise>();
-            services.AddScoped<SaveFile>();
-
-            /*services.AddScoped<IConnectionMultiplexer>(provider =>
+            services.AddLocalization(o => { o.ResourcesPath = "Resources"; });
+            services.Configure<RequestLocalizationOptions>(options =>
             {
-                var redisConnectionString = configuration.GetConnectionString("Redis") ?? "localhost:6379";
-                var config = ConfigurationOptions.Parse(redisConnectionString);
-                return ConnectionMultiplexer.Connect(config);
+                options.SetDefaultCulture("uz-UZ");
+                options.AddSupportedUICultures("uz-UZ", "en-US", "ru-RU");
+                options.FallBackToParentUICultures = true;
+                options.RequestCultureProviders.Clear();
             });
 
-            services.AddScoped<IDatabase>(provider =>
-            {
-                var connectionMultiplexer = provider.GetRequiredService<IConnectionMultiplexer>();
-                return connectionMultiplexer.GetDatabase();
-            });*/
+            services.AddControllersWithViews()
+                .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
+                .AddDataAnnotationsLocalization();
+
+            services.AddScoped<UpdateHandlers>();
+            services.AddScoped<IRegisterationServiceHandler, RegisterationServiceHandler>();
+            services.AddScoped<IMenuServiceHandler,MenuServiceHandler>();
+            services.AddScoped<IFileService, FileService>();
+            services.AddScoped<IChannelMessageServiceHandler, ChannelMessageServiceHandler>();
+            services.AddScoped<IFeedbackServiceHandler, FeedbackServiceHandler>();
+            services.AddScoped<ISettingsServiceHandler, SettingsServiceHandler>();
+            services.AddScoped<IStateManagementService, StateManagementService>();
+            services.AddScoped<ICacheDbService, RedisService>();
 
             return services;
         }

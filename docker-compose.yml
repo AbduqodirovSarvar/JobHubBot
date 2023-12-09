@@ -6,14 +6,14 @@ services:
       context: .
       dockerfile: Dockerfile
     depends_on:
-      - db
+      - JobHubDb
     ports:
       - "8443:8443"
     environment:
-      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=JoboHubBot;User Id=postgres;Password=12345
+      - ConnectionStrings__DefaultConnection=Host=JobHubDb;Port=5432;Database=JoboHubBot;User Id=postgres;Password=12345
       - ConnectionStrings__Redis=127.0.0.1:6379
       - BotConfiguration__BotToken=6780512045:AAGxGfF7_EwhKKfp4CKufk2x4eZgJ15QJSY
-      - BotConfiguration__HostAddress=https://5fda-82-215-114-176.ngrok-free.app
+      - BotConfiguration__HostAddress=https://ad7d-82-215-114-176.ngrok-free.app
       - BotConfiguration__SecretKey=qwertyuiop
       - BotConfiguration__Route=/api/bot
       - ASPNETCORE_ENVIRONMENT=Development
@@ -21,10 +21,10 @@ services:
     networks:
       - JoboHub
 
-  db:
+  JobHubDb:
     image: postgres:16
     restart: unless-stopped
-    container_name: db
+    container_name: JobHubDb
     environment:
       POSTGRES_DB: JoboHubBot
       POSTGRES_USER: postgres

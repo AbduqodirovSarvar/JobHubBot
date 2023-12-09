@@ -3,6 +3,7 @@ using JobHubBot.Db.DbContexts;
 using JobHubBot.Models.Telegram;
 using JobHubBot.Services.Configurations;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 var applicationBuilder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,9 @@ application.UseCors(options =>
         .AllowAnyMethod()
         .AllowAnyHeader();
 });
+
+
+application.UseRequestLocalization(application.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
 
 // HTTP request pipeline configuration.
 if (application.Environment.IsDevelopment())
@@ -45,13 +49,19 @@ application.UseEndpoints(endpoints =>
     endpoints.MapControllers();
 });
 
-using (var scope = application.Services.CreateScope())
+try
 {
-    var services = scope.ServiceProvider;
-    var context = services.GetRequiredService<AppDbContext>();
+    using (var scope = application.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+        var context = services.GetRequiredService<AppDbContext>();
 
-    // Apply all pending migrations
-    context.Database.Migrate();
+        context.Database.Migrate();
+    }
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"Error adding migration: {ex.Message}");
 }
 
 

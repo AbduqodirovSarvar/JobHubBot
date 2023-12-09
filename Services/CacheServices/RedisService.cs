@@ -1,49 +1,40 @@
-﻿/*using IDatabase = StackExchange.Redis.IDatabase;
-using JobHubBot.Models.Telegram;
+﻿using JobHubBot.Interfaces.IDbInterfaces;
+using Newtonsoft.Json;
+using StackExchange.Redis;
+using IDatabase = StackExchange.Redis.IDatabase;
 
 namespace JobHubBot.Services.CacheServices
 {
-    public class RedisService
+    public class RedisService : ICacheDbService
     {
         private readonly IDatabase _redisDb;
-        public RedisService(IDatabase redis)
+
+        public RedisService(IConnectionMultiplexer connectionMultiplexer)
         {
-            _redisDb = redis;
+            _redisDb = connectionMultiplexer.GetDatabase();
         }
 
-        public async Task SetUserState(long chatId, string state)
+        public async Task DeleteAsync(string key)
         {
-            await _redisDb.StringSetAsync($"{chatId}", state);
+            await _redisDb.KeyDeleteAsync(key);
         }
 
-        public async Task<string?> GetUserState(long chatId)
+        public async Task<T?> GetObjectAsync<T>(string key) where T : class
         {
-            string? state = await _redisDb.StringGetAsync($"{chatId}");
-            return state;
-        }
-
-        public Task DeleteState(long Id)
-        {
-            _redisDb.KeyDelete($"{Id}");
-
-            return Task.CompletedTask;
-        }
-
-        public async Task Next(long Id)
-        {
-            string? state = await _redisDb.StringGetAsync($"{Id}");
-            if (state == null)
+            RedisValue value = await _redisDb.StringGetAsync(key);
+            if (value.HasValue)
             {
-                return;
+                return JsonConvert.DeserializeObject<T>(value!);
             }
-            await _redisDb.StringSetAsync($"{Id}", States.states[Array.IndexOf(States.states, state) + 1]);
-
-            var a = await _redisDb.StringGetAsync($"{Id}");
-
-            Console.WriteLine("STATE:_____________________" + a);
-
-            return;
+            return null;
         }
+
+        public async Task SetObjectAsync<T>(string key, T obj) where T : class
+        {
+            var stringJson = JsonConvert.SerializeObject(obj);
+            await _redisDb.StringSetAsync(key, stringJson);
+            await _redisDb.KeyExpireAsync(key, TimeSpan.FromDays(1));
+        }
+
     }
 }
-*/
