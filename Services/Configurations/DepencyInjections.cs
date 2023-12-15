@@ -5,10 +5,12 @@ using JobHubBot.Interfaces.IHandlerServiceInterfaces;
 using JobHubBot.Models.Telegram;
 using JobHubBot.Services.CacheServices;
 using JobHubBot.Services.HandleServices;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using StackExchange.Redis;
+using System.Globalization;
 using Telegram.Bot;
 
 namespace JobHubBot.Services.Configurations
@@ -42,18 +44,21 @@ namespace JobHubBot.Services.Configurations
 
             services.AddHostedService<ConfigureWebhook>();
 
-            services.AddLocalization(o => { o.ResourcesPath = "Resources"; });
-            services.Configure<RequestLocalizationOptions>(options =>
-            {
-                options.SetDefaultCulture("uz-UZ");
-                options.AddSupportedUICultures("uz-UZ", "en-US", "ru-RU");
-                options.FallBackToParentUICultures = true;
-                options.RequestCultureProviders.Clear();
-            });
+            services.AddLocalization();
+            services.Configure<RequestLocalizationOptions>(
+                options =>
+                {
+                    var supportedCultures = new List<CultureInfo>
+                    {
+                        new CultureInfo("en-US"),
+                        new CultureInfo("uz-UZ"),
+                        new CultureInfo("ru-RU")
+                    };
 
-            services.AddControllersWithViews()
-                .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
-                .AddDataAnnotationsLocalization();
+                    options.DefaultRequestCulture = new RequestCulture(culture: "en-US", uiCulture: "en-US");
+                    options.SupportedCultures = supportedCultures;
+                    options.SupportedUICultures = supportedCultures;
+                });
 
             services.AddScoped<UpdateHandlers>();
             services.AddScoped<IRegisterationServiceHandler, RegisterationServiceHandler>();

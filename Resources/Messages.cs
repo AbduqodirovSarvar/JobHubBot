@@ -1,6 +1,6 @@
 ﻿namespace JobHubBot.Resources
 {
-    public class BotLocalizer
+    public class Messages
     {
     }
 }

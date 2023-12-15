@@ -11,6 +11,7 @@ using JobHubBot.Services.KeyboardServices;
 using JobHubBot.Db.Enums;
 using User = JobHubBot.Db.Entities.User;
 using JobHubBot.Db.Entities;
+using System.Globalization;
 
 namespace JobHubBot.Services.HandleServices
 {
@@ -18,14 +19,14 @@ namespace JobHubBot.Services.HandleServices
     {
         private readonly IAppDbContext _dbContext;
         private readonly ITelegramBotClient _botClient;
-        private readonly IStringLocalizer<BotLocalizer> _localizer;
+        private readonly IStringLocalizer<Messages> _localizer;
         private readonly IMenuServiceHandler _menuServiceHandler;
         private readonly IStateManagementService _stateManagementService;
         private readonly ICacheDbService _cacheDbService;
         public SettingsServiceHandler(
-            IAppDbContext dbContext, 
+            IAppDbContext dbContext,
             ITelegramBotClient botClient, 
-            IStringLocalizer<BotLocalizer> localizer,
+            IStringLocalizer<Messages> localizer,
             IMenuServiceHandler menuServiceHandler,
             IStateManagementService stateManagementService,
             ICacheDbService cacheDbService
@@ -43,7 +44,7 @@ namespace JobHubBot.Services.HandleServices
         {
             await _botClient.SendTextMessageAsync(
                 chatId: message.Chat.Id,
-                text: _localizer["change_language"],
+                text: _localizer["choose_language"],
                 replyMarkup: KeyboardsMaster.CreateReplyKeyboardMarkup(new List<string>() { Language.uz.ToString(), Language.en.ToString(), Language.ru.ToString()}),
                 cancellationToken: cancellationToken);
 
@@ -67,6 +68,18 @@ namespace JobHubBot.Services.HandleServices
                 _ => Language.ru,
             };
             user.Language = language;
+
+            var languageCode = user.Language switch
+            {
+                Language.uz => "uz-UZ",
+                Language.en => "en-US",
+                Language.ru => "ru-RU",
+                _ => "uz-UZ"
+            };
+
+            Thread.CurrentThread.CurrentCulture = new CultureInfo(languageCode);
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo(languageCode);
+
             await _dbContext.SaveChangesAsync(cancellationToken);
             await _menuServiceHandler.RedirectToSettingsMenuAsync(message, cancellationToken);
             await _cacheDbService.SetObjectAsync(message.Chat.Id.ToString(), user);
@@ -77,7 +90,7 @@ namespace JobHubBot.Services.HandleServices
         {
             await _botClient.SendTextMessageAsync(
                 chatId: message.Chat.Id,
-                text: _localizer["send_new_name"],
+                text: _localizer["enter_fullname"],
                 replyMarkup: new ReplyKeyboardRemove(),
                 cancellationToken: cancellationToken);
 
@@ -106,7 +119,7 @@ namespace JobHubBot.Services.HandleServices
         {
             await _botClient.SendTextMessageAsync(
                 chatId: message.Chat.Id,
-                text: _localizer["change_phone"],
+                text: _localizer["send-contact"],
                 replyMarkup: new ReplyKeyboardRemove(),
                 cancellationToken: cancellationToken);
 
@@ -130,11 +143,6 @@ namespace JobHubBot.Services.HandleServices
 
         public async Task ClickChangeSkillsButtonAsync(Message message, CancellationToken cancellationToken)
         {
-            await _botClient.SendTextMessageAsync(
-                chatId: message.Chat.Id,
-                text: _localizer["change_skill"],
-                cancellationToken: cancellationToken);
-
             await ShowAllSkillsAsync(message, cancellationToken);
 
             await _stateManagementService.SetUserState(message.Chat.Id, StateList.settings_change_skills);
@@ -146,7 +154,7 @@ namespace JobHubBot.Services.HandleServices
             var user = await _dbContext.Users.Include(x => x.Skills).FirstOrDefaultAsync(x => x.TelegramId == message.Chat.Id, cancellationToken);
             if (user == null)
             {
-                await _menuServiceHandler.RedirectToSkillsMenuAsync(message, cancellationToken);
+                await _menuServiceHandler.RedirectToSettingsMenuAsync(message, cancellationToken);
                 return;
             }
 
@@ -181,11 +189,11 @@ namespace JobHubBot.Services.HandleServices
         {
             var skills = (await _dbContext.Users.Include(x => x.Skills).FirstOrDefaultAsync(x => x.TelegramId == message.Chat.Id, cancellationToken))?.Skills;
             var keyboardNames = skills?.Select(x => x.Name).ToList() ?? new List<string>();
-            keyboardNames.Add(_localizer["back"]);
+            keyboardNames.Add(_localizer["back_button"]);
 
             await _botClient.SendTextMessageAsync(
                 chatId: message.Chat.Id,
-                text: _localizer["for_removing_choose"],
+                text: _localizer["skill_setting"],
                 replyMarkup: KeyboardsMaster.CreateReplyKeyboardMarkup(keyboardNames),
                 cancellationToken: cancellationToken);
 

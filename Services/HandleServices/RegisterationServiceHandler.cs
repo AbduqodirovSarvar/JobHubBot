@@ -5,6 +5,7 @@ using JobHubBot.Resources;
 using JobHubBot.Services.Enums;
 using JobHubBot.Services.KeyboardServices;
 using Microsoft.Extensions.Localization;
+using System.Globalization;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -17,13 +18,13 @@ namespace JobHubBot.Services.HandleServices
         private readonly ITelegramBotClient _botClient;
         private readonly IAppDbContext _dbContext;
         private readonly IMenuServiceHandler _menuServiceHandler;
-        private readonly IStringLocalizer<BotLocalizer> _stringLocalizer;
+        private readonly IStringLocalizer<Messages> _stringLocalizer;
         private readonly IStateManagementService _stateManagementService;
         public RegisterationServiceHandler(
             ITelegramBotClient botClient,
             IAppDbContext dbContext,
             IMenuServiceHandler menuServiceHandler,
-            IStringLocalizer<BotLocalizer> stringLocalizer,
+            IStringLocalizer<Messages> stringLocalizer,
             IStateManagementService stateManagementService
             )
         {
@@ -51,9 +52,20 @@ namespace JobHubBot.Services.HandleServices
                 Language = language
             };
 
+            var languageCode = UserObject.Language switch
+            {
+                Language.uz => "uz-UZ",
+                Language.en => "en-US",
+                Language.ru => "ru-RU",
+                _ => "uz-UZ"
+            };
+
+            Thread.CurrentThread.CurrentCulture = new CultureInfo(languageCode);
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo(languageCode);
+
             await _botClient.SendTextMessageAsync(
                 chatId: UserObject.TelegramId,
-                text: _stringLocalizer["fullName"],
+                text: _stringLocalizer["enter_fullname"],
                 replyMarkup: new ReplyKeyboardRemove(),
                 cancellationToken: cancellationToken
             );
@@ -71,16 +83,24 @@ namespace JobHubBot.Services.HandleServices
             }
             UserObject.FullName = message.Text!;
 
+            var languageCode = UserObject.Language switch
+            {
+                Language.uz => "uz-UZ",
+                Language.en => "en-US",
+                Language.ru => "ru-RU",
+                _ => "uz-UZ"
+            };
+
+            Thread.CurrentThread.CurrentCulture = new CultureInfo(languageCode);
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo(languageCode);
             await _botClient.SendTextMessageAsync(
                 chatId: UserObject.TelegramId,
-                text: _stringLocalizer["Send Contact"],
-                replyMarkup: KeyboardsMaster.CreateContactRequestKeyboardMarkup("Send Contact"),
+                text: _stringLocalizer["send-contact"],
+                replyMarkup: KeyboardsMaster.CreateContactRequestKeyboardMarkup(_stringLocalizer["send_contact_button"]),
                 cancellationToken: cancellationToken);
 
             await _stateManagementService.SetUserState(UserObject.TelegramId, StateList.register_contact);
         }
-
-
 
         public async Task ReceivedUserContactAsync(Message message, CancellationToken cancellationToken)
         {
@@ -91,12 +111,23 @@ namespace JobHubBot.Services.HandleServices
             }
             UserObject.Phone = message.Contact!.PhoneNumber!;
 
+            var languageCode = UserObject.Language switch
+            {
+                Language.uz => "uz-UZ",
+                Language.en => "en-US",
+                Language.ru => "ru-RU",
+                _ => "uz-UZ"
+            };
+
+            Thread.CurrentThread.CurrentCulture = new CultureInfo(languageCode);
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo(languageCode);
+
             await _dbContext.Users.AddAsync(UserObject, cancellationToken);
             await _dbContext.SaveChangesAsync(cancellationToken);
 
             await _botClient.SendTextMessageAsync(
                 chatId: UserObject.TelegramId,
-                text: _stringLocalizer["Congratulations"],
+                text: _stringLocalizer["congrats_after_registeration"],
                 replyMarkup: new ReplyKeyboardRemove(),
                 cancellationToken: cancellationToken
             );

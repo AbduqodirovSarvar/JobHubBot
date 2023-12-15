@@ -1,4 +1,5 @@
-﻿using JobHubBot.Interfaces;
+﻿using JobHubBot.Db.Enums;
+using JobHubBot.Interfaces;
 using JobHubBot.Interfaces.IDbInterfaces;
 using JobHubBot.Interfaces.IHandlerServiceInterfaces;
 using JobHubBot.Resources;
@@ -24,6 +25,7 @@ namespace JobHubBot.Services.HandleServices
         private readonly IChannelMessageServiceHandler _channelMessageServiceHandler;
         private readonly ISettingsServiceHandler _settingsServiceHandler;
         private readonly IFeedbackServiceHandler _feedbackService;
+        private readonly IStringLocalizer<Messages> _localizer;
 
         public UpdateHandlers(
             ILogger<UpdateHandlers> logger,
@@ -34,7 +36,8 @@ namespace JobHubBot.Services.HandleServices
             IChannelMessageServiceHandler channelMessageServiceHandler,
             IStateManagementService stateManagementService,
             ISettingsServiceHandler settingsServiceHandler,
-            IFeedbackServiceHandler feedbackServiceHandler
+            IFeedbackServiceHandler feedbackServiceHandler,
+            IStringLocalizer<Messages> stringLocalizer
             )
         {
             _logger = logger;
@@ -47,6 +50,7 @@ namespace JobHubBot.Services.HandleServices
             _channelMessageServiceHandler = channelMessageServiceHandler;
             _cacheDbService = cacheDbService;
             _feedbackService = feedbackServiceHandler;
+            _localizer = stringLocalizer;
         }
 
         public Task HandleErrorAsync(Exception exception)
@@ -126,25 +130,33 @@ namespace JobHubBot.Services.HandleServices
                 await _cacheDbService.SetObjectAsync(message.Chat.Id.ToString(), user);
             }
 
-            
+            var languageCode = user.Language switch
+            {
+                Language.uz => "uz-UZ",
+                Language.en => "en-US",
+                Language.ru => "ru-RU",
+                _ => "uz-UZ"
+            };
+
+            Thread.CurrentThread.CurrentCulture = new CultureInfo(languageCode);
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo(languageCode);
 
             forward = state switch
             {
-                
-                StateList.settings when message.Text == "change_fullname" => _settingsServiceHandler.ClickChangeFullNameButtonAsync(message, cancellationToken),
-                StateList.settings when message.Text == "change_phone" => _settingsServiceHandler.ClickChangePhoneNumberAsync(message, cancellationToken),
-                StateList.settings when message.Text == "change_language" => _settingsServiceHandler.ClickChangeLanguageAsync(message, cancellationToken),
-                StateList.settings when message.Text == "change_skill" => _settingsServiceHandler.ClickChangeSkillsButtonAsync(message, cancellationToken),
-                StateList.settings when message.Text == "back" => _menuServiceHandler.RedirectToMainMenuAsync(message.Chat.Id, cancellationToken),
+                StateList.settings when message.Text == _localizer["setting_change_name_button"] => _settingsServiceHandler.ClickChangeFullNameButtonAsync(message, cancellationToken),
+                StateList.settings when message.Text == _localizer["setting_change_phone_number_button"] => _settingsServiceHandler.ClickChangePhoneNumberAsync(message, cancellationToken),
+                StateList.settings when message.Text == _localizer["setting_change_language_button"] => _settingsServiceHandler.ClickChangeLanguageAsync(message, cancellationToken),
+                StateList.settings when message.Text == _localizer["setting_change_skill_button"] => _settingsServiceHandler.ClickChangeSkillsButtonAsync(message, cancellationToken),
+                StateList.settings when message.Text == _localizer["back_button"] => _menuServiceHandler.RedirectToMainMenuAsync(message.Chat.Id, cancellationToken),
                 StateList.settings_change_language => _settingsServiceHandler.ReceivedNewLanguageAsync(message, cancellationToken),
                 StateList.settings_change_phone => _settingsServiceHandler.ReceivedNewPhoneNumberAsync(message, cancellationToken),
                 StateList.settings_change_fullname => _settingsServiceHandler.ReceivedNewFullNameAsync(message, cancellationToken),
-                StateList.settings_change_skills when message.Text == "back" => _menuServiceHandler.RedirectToSettingsMenuAsync(message, cancellationToken),
+                StateList.settings_change_skills when message.Text == _localizer["back_button"] => _menuServiceHandler.RedirectToSettingsMenuAsync(message, cancellationToken),
                 StateList.settings_change_skills => _settingsServiceHandler.ReceivedSkillForSettingAsync(message, cancellationToken),
                 StateList.feedback => _feedbackService.ReceivedFeedbackAsync(message, cancellationToken),
-                _ when message.Text == "Settings" => _menuServiceHandler.RedirectToSettingsMenuAsync(message, cancellationToken),
-                _ when message.Text == "Contact" => _menuServiceHandler.RedirectToContactMenuAsync(message, cancellationToken),
-                _ when message.Text == "Feedback" => _menuServiceHandler.RedirectToFeedbackMenuAsync(message, cancellationToken),
+                _ when message.Text == _localizer["setting_button"] => _menuServiceHandler.RedirectToSettingsMenuAsync(message, cancellationToken),
+                _ when message.Text == _localizer["contact_button"] => _menuServiceHandler.RedirectToContactMenuAsync(message, cancellationToken),
+                _ when message.Text == _localizer["feedback_button"] => _menuServiceHandler.RedirectToFeedbackMenuAsync(message, cancellationToken),
                 _ => _menuServiceHandler.RedirectToMainMenuAsync(message.Chat.Id, cancellationToken)
             };
             await forward;

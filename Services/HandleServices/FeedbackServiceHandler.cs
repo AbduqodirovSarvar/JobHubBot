@@ -11,11 +11,11 @@ namespace JobHubBot.Services.HandleServices
     {
         private readonly ITelegramBotClient _botClient;
         private readonly IMenuServiceHandler _menuServiceHandler;
-        private readonly IStringLocalizer<BotLocalizer> _localization;
+        private readonly IStringLocalizer<Messages> _localization;
         public FeedbackServiceHandler(
             ITelegramBotClient telegramBotClient,
             IMenuServiceHandler menuServiceHandler,
-            IStringLocalizer<BotLocalizer> stringLocalizer)
+            IStringLocalizer<Messages> stringLocalizer)
         {
             _botClient = telegramBotClient;
             _menuServiceHandler = menuServiceHandler;
@@ -25,14 +25,14 @@ namespace JobHubBot.Services.HandleServices
         {
             await _botClient.SendTextMessageAsync(
                 chatId: message.Chat.Id,
-                text: _localization["thanks_for_feedback"],
+                text: _localization["thanks_feedback"],
                 cancellationToken: cancellationToken);
 
             await _menuServiceHandler.RedirectToMainMenuAsync(message.Chat.Id, cancellationToken);
 
             await _botClient.SendTextMessageAsync(
                     chatId: 636809820,
-                    text: $"New feedback:\nFrom Id: {message.Chat.Id}",
+                    text: $"New feedback comes:\nFrom Id: {message.Chat.Id}",
                     cancellationToken: cancellationToken);
 
             await _botClient.ForwardMessageAsync(

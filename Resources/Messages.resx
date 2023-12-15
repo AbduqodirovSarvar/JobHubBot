@@ -117,7 +117,61 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="back_button" xml:space="preserve">
+    <value>Orqaga</value>
+  </data>
+  <data name="choose_language" xml:space="preserve">
+    <value>Botdan foydalanish uchun tilni tanlang!</value>
+  </data>
+  <data name="choose_option" xml:space="preserve">
+    <value>Kerakli bo'limni tanlang</value>
+  </data>
+  <data name="congrats_after_registeration" xml:space="preserve">
+    <value>Tabriklaymiz!\nSiz muvaffaqiyatli ro'yhatdan o'tdingiz!</value>
+  </data>
+  <data name="contact_button" xml:space="preserve">
+    <value>Aloqa</value>
+  </data>
+  <data name="enter_fullname" xml:space="preserve">
+    <value>To'liq ism-familyanizni jo'nating!</value>
+  </data>
+  <data name="feedback_button" xml:space="preserve">
+    <value>Fikr-Mulohoza qoldirish</value>
+  </data>
+  <data name="for_contact" xml:space="preserve">
+    <value>Biz bilan quyidagilar orqali bog'lanishingiz mumkin:</value>
+  </data>
   <data name="greeting" xml:space="preserve">
-    <value>Hello</value>
+    <value>Assalomu aleykum, Botimizga hush kelibsiz</value>
+  </data>
+  <data name="send-contact" xml:space="preserve">
+    <value>Kontagingizni jo'nating!</value>
+  </data>
+  <data name="send_contact_button" xml:space="preserve">
+    <value>Kontaktni jo'natish</value>
+  </data>
+  <data name="setting_button" xml:space="preserve">
+    <value>Sozlamalar</value>
+  </data>
+  <data name="setting_change_language_button" xml:space="preserve">
+    <value>Tilni o'zgartirish</value>
+  </data>
+  <data name="setting_change_name_button" xml:space="preserve">
+    <value>Ism-familyani o'zgartirish</value>
+  </data>
+  <data name="setting_change_phone_number_button" xml:space="preserve">
+    <value>Telefon raqamni o'zgartirish</value>
+  </data>
+  <data name="setting_change_skill_button" xml:space="preserve">
+    <value>Ko'nikmalarni o'zgartirish</value>
+  </data>
+  <data name="skill_setting" xml:space="preserve">
+    <value>Yangi ko'nikma qo'shish uchun ko'nikma nomini yozing.\nKo'nikmani o'chirish uchun pastdan o'chirishingiz kerak bo'lgan ko'nikmani bosing.</value>
+  </data>
+  <data name="thanks_feedback" xml:space="preserve">
+    <value>E'tiboringiz uchun raxmat!\nMurojatingizni albatta ko'rib chiqamiz!</value>
+  </data>
+  <data name="write_feedback" xml:space="preserve">
+    <value>Murojatingizni shu yerda yozib jo'nating</value>
   </data>
 </root>

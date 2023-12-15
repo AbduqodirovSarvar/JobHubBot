@@ -1,6 +1,8 @@
 ﻿using JobHubBot.Interfaces.IDbInterfaces;
 using JobHubBot.Interfaces.IHandlerServiceInterfaces;
+using JobHubBot.Resources;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
@@ -11,14 +13,18 @@ namespace JobHubBot.Services.HandleServices
         private readonly IAppDbContext _dbContext;
         private readonly ITelegramBotClient _botClient;
         private readonly ILogger<ChannelMessageServiceHandler> _logger;
+        private readonly IStringLocalizer<Messages> _localizer;
         public ChannelMessageServiceHandler(
             IAppDbContext dbContext,
             ITelegramBotClient telegramBotClient,
-            ILogger<ChannelMessageServiceHandler> logger)
+            ILogger<ChannelMessageServiceHandler> logger,
+            IStringLocalizer<Messages> stringLocalizer
+            )
         {
             _dbContext = dbContext;
             _botClient = telegramBotClient;
             _logger = logger;
+            _localizer = stringLocalizer;
         }
         public async Task ForwardJobMessageForUserAsync(Message message, CancellationToken cancellationToken)
         {

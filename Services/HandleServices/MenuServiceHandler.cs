@@ -14,12 +14,12 @@ namespace JobHubBot.Services.HandleServices
     public class MenuServiceHandler : IMenuServiceHandler
     {
         private readonly ITelegramBotClient _botClient;
-        private readonly IStringLocalizer<BotLocalizer> _stringLocalizer;
+        private readonly IStringLocalizer<Messages> _stringLocalizer;
         private readonly IStateManagementService _stateManagementService;
         private readonly ICacheDbService _cacheDbService;
         public MenuServiceHandler(
             ITelegramBotClient botClient,
-            IStringLocalizer<BotLocalizer> stringLocalizer,
+            IStringLocalizer<Messages> stringLocalizer,
             IStateManagementService stateManagementService,
             ICacheDbService cacheDbService)
         {
@@ -53,9 +53,9 @@ namespace JobHubBot.Services.HandleServices
         {
             var keyboardMarkup = KeyboardsMaster.CreateReplyKeyboardMarkup(new List<string>()
             {
-                _stringLocalizer["Feedback"],
-                _stringLocalizer["Settings"],
-                _stringLocalizer["Contact"]
+                _stringLocalizer["feedback_button"],
+                _stringLocalizer["setting_button"],
+                _stringLocalizer["contact_button"]
             });
             await _botClient.SendTextMessageAsync(
                 chatId: Id,
@@ -71,15 +71,15 @@ namespace JobHubBot.Services.HandleServices
         {
             var keyboardMarkup = KeyboardsMaster.CreateReplyKeyboardMarkup(new List<string>()
             {
-                _stringLocalizer["change_skill"],
-                _stringLocalizer["change_name"],
-                _stringLocalizer["change_phone"],
-                _stringLocalizer["change_language"],
-                _stringLocalizer["back"]
+                _stringLocalizer["setting_change_name_button"],
+                _stringLocalizer["setting_change_language_button"],
+                _stringLocalizer["setting_change_phone_number_button"],
+                _stringLocalizer["setting_change_skill_button"],
+                _stringLocalizer["back_button"]
             });
             await _botClient.SendTextMessageAsync(
                 chatId: message.Chat.Id,
-                text: _stringLocalizer["choose_options"],
+                text: _stringLocalizer["choose_option"],
                 replyMarkup: keyboardMarkup,
                 cancellationToken: cancellationToken);
 
@@ -91,7 +91,7 @@ namespace JobHubBot.Services.HandleServices
         {
             await _botClient.SendTextMessageAsync(
                 chatId: message.Chat.Id,
-                text: _stringLocalizer["choose_options"],
+                text: _stringLocalizer["choose_option"],
                 replyMarkup: new ReplyKeyboardRemove(),
                 cancellationToken: cancellationToken);
 
@@ -99,30 +99,11 @@ namespace JobHubBot.Services.HandleServices
             return;
         }
 
-        public async Task RedirectToSkillsMenuAsync(Message message, CancellationToken cancellationToken)
-        {
-            var keyboardMarkup = KeyboardsMaster.CreateReplyKeyboardMarkup(new List<string>()
-            {
-                _stringLocalizer["add_skill"],
-                _stringLocalizer["remove_skill"],
-                _stringLocalizer["all_skill"],
-                _stringLocalizer["back"]
-            });
-            await _botClient.SendTextMessageAsync(
-                chatId: message.Chat.Id,
-                text: _stringLocalizer["choose_options"],
-                replyMarkup: keyboardMarkup,
-                cancellationToken: cancellationToken);
-
-            await _stateManagementService.SetUserState(message.Chat.Id, Enums.StateList.register_language);
-            return;
-        }
-
         public async Task RedirectToContactMenuAsync(Message message, CancellationToken cancellationToken)
         {
             await _botClient.SendTextMessageAsync(
                 chatId: message.Chat.Id,
-                text: _stringLocalizer["information"],
+                text: _stringLocalizer["for_contact"],
                 cancellationToken: cancellationToken);
 
             await _stateManagementService.SetUserState(message.Chat.Id, Enums.StateList.contact);

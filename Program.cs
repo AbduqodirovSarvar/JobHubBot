@@ -23,7 +23,7 @@ application.UseCors(options =>
 });
 
 
-application.UseRequestLocalization(application.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
+application.UseRequestLocalization(application.Services.GetService<IOptions<RequestLocalizationOptions>>().Value);
 
 // HTTP request pipeline configuration.
 if (application.Environment.IsDevelopment())
@@ -51,13 +51,10 @@ application.UseEndpoints(endpoints =>
 
 try
 {
-    using (var scope = application.Services.CreateScope())
-    {
-        var services = scope.ServiceProvider;
-        var context = services.GetRequiredService<AppDbContext>();
-
-        context.Database.Migrate();
-    }
+    using var scope = application.Services.CreateScope();
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<AppDbContext>();
+    context.Database.Migrate();
 }
 catch (Exception ex)
 {
