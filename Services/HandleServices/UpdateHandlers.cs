@@ -7,6 +7,7 @@ using JobHubBot.Services.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using System.Globalization;
+using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -26,6 +27,7 @@ namespace JobHubBot.Services.HandleServices
         private readonly ISettingsServiceHandler _settingsServiceHandler;
         private readonly IFeedbackServiceHandler _feedbackService;
         private readonly IStringLocalizer<Messages> _localizer;
+        private readonly ITelegramBotClient _botClient;
 
         public UpdateHandlers(
             ILogger<UpdateHandlers> logger,
@@ -37,7 +39,8 @@ namespace JobHubBot.Services.HandleServices
             IStateManagementService stateManagementService,
             ISettingsServiceHandler settingsServiceHandler,
             IFeedbackServiceHandler feedbackServiceHandler,
-            IStringLocalizer<Messages> stringLocalizer
+            IStringLocalizer<Messages> stringLocalizer,
+            ITelegramBotClient telegramBotClient
             )
         {
             _logger = logger;
@@ -51,6 +54,7 @@ namespace JobHubBot.Services.HandleServices
             _cacheDbService = cacheDbService;
             _feedbackService = feedbackServiceHandler;
             _localizer = stringLocalizer;
+            _botClient = telegramBotClient;
         }
 
         public Task HandleErrorAsync(Exception exception)
@@ -69,12 +73,33 @@ namespace JobHubBot.Services.HandleServices
             var handler = update switch
             {
                 { Message: { Chat.Type: ChatType.Channel } channelMessage } => BotOnChannelMessageReceived(channelMessage, cancellationToken),
+                { Message: { Chat.Type: ChatType.Group or ChatType.Supergroup }  groupMessage } => BotOnGroupMessageReceived(groupMessage, cancellationToken),
                 { ChannelPost: { } channelMessage } => BotOnChannelMessageReceived(channelMessage, cancellationToken),
                 { Message: { } message } => BotOnMessageReceived(message, cancellationToken),
                 _ => UnknownUpdateHandlerAsync(update)
             };
 
             await handler;
+        }
+
+        private async Task BotOnGroupMessageReceived(Message groupMessage, CancellationToken cancellationToken)
+        {
+            if(groupMessage.ReplyToMessage != null)
+            {
+                try
+                {
+                    await _botClient.ForwardMessageAsync(
+                    chatId: groupMessage.ReplyToMessage.ForwardFrom!.Id,
+                    fromChatId: groupMessage.ReplyToMessage.Chat.Id,
+                    messageId: groupMessage.MessageId,
+                    cancellationToken: cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogInformation("Error while replying to feedback", ex.Message);
+                }
+            }
+            return;
         }
 
         private async Task BotOnChannelMessageReceived(Message channelMessage, CancellationToken cancellationToken)

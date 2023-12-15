@@ -1,19 +1,21 @@
 version: '3.8'
 
 services:
-  bot:
+  jobhubbot:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: jobhubbot
     depends_on:
-      - JobHubDb
+      - jobhubdb
+      - jubhubredis
     ports:
       - "8443:8443"
     environment:
-      - ConnectionStrings__DefaultConnection=Host=JobHubDb;Port=5432;Database=JoboHubBot;User Id=postgres;Password=12345
-      - ConnectionStrings__Redis=127.0.0.1:6379
+      - ConnectionStrings__DefaultConnection=Host=jobhubdb;Port=5432;Database=JoboHubBot;User Id=postgres;Password=12345
+      - ConnectionStrings__Redis=jobhubredis:6379
       - BotConfiguration__BotToken=6780512045:AAGxGfF7_EwhKKfp4CKufk2x4eZgJ15QJSY
-      - BotConfiguration__HostAddress=https://ad7d-82-215-114-176.ngrok-free.app
+      - BotConfiguration__HostAddress=https://f518-82-215-114-176.ngrok-free.app
       - BotConfiguration__SecretKey=qwertyuiop
       - BotConfiguration__Route=/api/bot
       - ASPNETCORE_ENVIRONMENT=Development
@@ -21,10 +23,10 @@ services:
     networks:
       - JoboHub
 
-  JobHubDb:
+  jobhubdb:
     image: postgres:16
-    restart: unless-stopped
-    container_name: JobHubDb
+    restart: always
+    container_name: jobhubdb
     environment:
       POSTGRES_DB: JoboHubBot
       POSTGRES_USER: postgres
@@ -36,8 +38,20 @@ services:
     networks:
       - JoboHub
 
+  jubhubredis:
+    image: redis:latest
+    restart: always
+    container_name: jobhubredis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - JoboHub
+
 volumes:
   data:
+  redis-data:
 networks:
   JoboHub:
     driver: bridge  

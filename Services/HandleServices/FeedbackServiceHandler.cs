@@ -36,7 +36,7 @@ namespace JobHubBot.Services.HandleServices
                     cancellationToken: cancellationToken);
 
             await _botClient.ForwardMessageAsync(
-                    chatId: 636809820,
+                    chatId: -1002102522664,
                     fromChatId: message.Chat.Id,
                     messageId: message.MessageId,
                     cancellationToken: cancellationToken);

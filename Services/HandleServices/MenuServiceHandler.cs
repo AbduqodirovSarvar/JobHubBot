@@ -103,7 +103,7 @@ namespace JobHubBot.Services.HandleServices
         {
             await _botClient.SendTextMessageAsync(
                 chatId: message.Chat.Id,
-                text: _stringLocalizer["for_contact"],
+                text: $"{_stringLocalizer["for_contact"]}\nTelegram: https://t.me/Sarvarbek_Abduqodirov",
                 cancellationToken: cancellationToken);
 
             await _stateManagementService.SetUserState(message.Chat.Id, Enums.StateList.contact);
