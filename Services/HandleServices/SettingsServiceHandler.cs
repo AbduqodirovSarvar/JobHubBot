@@ -39,18 +39,6 @@ namespace JobHubBot.Services.HandleServices
             _menuServiceHandler = menuServiceHandler;
         }
 
-        public async Task ClickChangeFullNameButtonAsync(Message message, CancellationToken cancellationToken)
-        {
-            await _botClient.SendTextMessageAsync(
-                chatId: message.Chat.Id,
-                text: _localizer["send_new_name"],
-                replyMarkup: new ReplyKeyboardRemove(),
-                cancellationToken: cancellationToken);
-
-            await _stateManagementService.SetUserState(message.Chat.Id, StateList.settings_change_fullname);
-            return;
-        }
-
         public async Task ClickChangeLanguageAsync(Message message, CancellationToken cancellationToken)
         {
             await _botClient.SendTextMessageAsync(
@@ -60,48 +48,6 @@ namespace JobHubBot.Services.HandleServices
                 cancellationToken: cancellationToken);
 
             await _stateManagementService.SetUserState(message.Chat.Id, StateList.settings_change_language);
-            return;
-        }
-
-        public async Task ClickChangePhoneNumberAsync(Message message, CancellationToken cancellationToken)
-        {
-            await _botClient.SendTextMessageAsync(
-                chatId: message.Chat.Id,
-                text: _localizer["change_phone"],
-                replyMarkup: new ReplyKeyboardRemove(),
-                cancellationToken: cancellationToken);
-
-            await _stateManagementService.SetUserState(message.Chat.Id, StateList.settings_change_phone);
-            return;
-        }
-
-        public async Task ClickChangeSkillsButtonAsync(Message message, CancellationToken cancellationToken)
-        {
-            await _botClient.SendTextMessageAsync(
-                chatId: message.Chat.Id,
-                text: _localizer["change_skill"],
-                cancellationToken: cancellationToken);
-
-            await ShowAllSkillsAsync(message, cancellationToken);
-
-            await _stateManagementService.SetUserState(message.Chat.Id, StateList.settings_change_skills);
-            return;
-        }
-
-        public async Task ReceivedNewFullNameAsync(Message message, CancellationToken cancellationToken)
-        {
-            var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.TelegramId == message.Chat.Id, cancellationToken);
-            if (user == null)
-            {
-                await _menuServiceHandler.RedirectToSettingsMenuAsync(message, cancellationToken);
-                return;
-            }
-            user.FullName = message.Text!;
-            await _dbContext.SaveChangesAsync(cancellationToken);
-
-            await _menuServiceHandler.RedirectToSettingsMenuAsync(message, cancellationToken);
-
-            await _cacheDbService.SetObjectAsync(message.Chat.Id.ToString(), user);
             return;
         }
 
@@ -122,7 +68,49 @@ namespace JobHubBot.Services.HandleServices
             };
             user.Language = language;
             await _dbContext.SaveChangesAsync(cancellationToken);
+            await _menuServiceHandler.RedirectToSettingsMenuAsync(message, cancellationToken);
             await _cacheDbService.SetObjectAsync(message.Chat.Id.ToString(), user);
+            return;
+        }
+
+        public async Task ClickChangeFullNameButtonAsync(Message message, CancellationToken cancellationToken)
+        {
+            await _botClient.SendTextMessageAsync(
+                chatId: message.Chat.Id,
+                text: _localizer["send_new_name"],
+                replyMarkup: new ReplyKeyboardRemove(),
+                cancellationToken: cancellationToken);
+
+            await _stateManagementService.SetUserState(message.Chat.Id, StateList.settings_change_fullname);
+            return;
+        }
+
+        public async Task ReceivedNewFullNameAsync(Message message, CancellationToken cancellationToken)
+        {
+            var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.TelegramId == message.Chat.Id, cancellationToken);
+            if (user == null)
+            {
+                await _menuServiceHandler.RedirectToSettingsMenuAsync(message, cancellationToken);
+                return;
+            }
+            user.FullName = message.Text!;
+            await _dbContext.SaveChangesAsync(cancellationToken);
+
+            await _menuServiceHandler.RedirectToSettingsMenuAsync(message, cancellationToken);
+
+            await _cacheDbService.SetObjectAsync(message.Chat.Id.ToString(), user);
+            return;
+        }
+
+        public async Task ClickChangePhoneNumberAsync(Message message, CancellationToken cancellationToken)
+        {
+            await _botClient.SendTextMessageAsync(
+                chatId: message.Chat.Id,
+                text: _localizer["change_phone"],
+                replyMarkup: new ReplyKeyboardRemove(),
+                cancellationToken: cancellationToken);
+
+            await _stateManagementService.SetUserState(message.Chat.Id, StateList.settings_change_phone);
             return;
         }
 
@@ -134,9 +122,22 @@ namespace JobHubBot.Services.HandleServices
                 await _menuServiceHandler.RedirectToSettingsMenuAsync(message, cancellationToken);
                 return;
             }
-            user.FullName = message.Text!;
+            user.Phone = message.Text!;
             await _dbContext.SaveChangesAsync(cancellationToken);
+            await _menuServiceHandler.RedirectToSettingsMenuAsync(message, cancellationToken);
+            return;
+        }
+
+        public async Task ClickChangeSkillsButtonAsync(Message message, CancellationToken cancellationToken)
+        {
+            await _botClient.SendTextMessageAsync(
+                chatId: message.Chat.Id,
+                text: _localizer["change_skill"],
+                cancellationToken: cancellationToken);
+
             await ShowAllSkillsAsync(message, cancellationToken);
+
+            await _stateManagementService.SetUserState(message.Chat.Id, StateList.settings_change_skills);
             return;
         }
 
@@ -152,8 +153,18 @@ namespace JobHubBot.Services.HandleServices
             var skill = user.Skills.FirstOrDefault(x => x.Name == message.Text);
             if (skill == null)
             {
-                user.Skills.Add(new Skill() { Name = message.Text!});
-                return;
+                var theskill = await _dbContext.Skills.FirstOrDefaultAsync(x => x.Name.ToLower() == message.Text!.ToLower(), cancellationToken);
+                if(theskill == null)
+                {
+                    theskill = new Skill()
+                    {
+                        Name = message.Text!
+                    };
+                    await _dbContext.Skills.AddAsync(theskill, cancellationToken);
+                    await _dbContext.SaveChangesAsync(cancellationToken);
+                }
+                
+                user.Skills.Add(theskill);
             }
             else
             {

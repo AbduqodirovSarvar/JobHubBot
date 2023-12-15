@@ -34,7 +34,7 @@ namespace JobHubBot.Services.HandleServices
             _stateManagementService = stateManagementService;
         }
 
-        private User? UserObject { get; set; } = null;
+        private static User? UserObject { get; set; } = null;
 
         public async Task ReceivedLanguageAsync(Message message, CancellationToken cancellationToken)
         {
@@ -76,7 +76,11 @@ namespace JobHubBot.Services.HandleServices
                 text: _stringLocalizer["Send Contact"],
                 replyMarkup: KeyboardsMaster.CreateContactRequestKeyboardMarkup("Send Contact"),
                 cancellationToken: cancellationToken);
+
+            await _stateManagementService.SetUserState(UserObject.TelegramId, StateList.register_contact);
         }
+
+
 
         public async Task ReceivedUserContactAsync(Message message, CancellationToken cancellationToken)
         {

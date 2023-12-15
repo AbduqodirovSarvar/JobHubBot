@@ -11,6 +11,5 @@ namespace JobHubBot.Interfaces.IHandlerServiceInterfaces
         Task RedirectToFeedbackMenuAsync(Message message, CancellationToken cancellationToken);
         Task RedirectToSkillsMenuAsync(Message message, CancellationToken cancellationToken);
         Task RedirectToContactMenuAsync(Message message, CancellationToken cancellationToken);
-        Task RedirectToSearchMenuAsync(Message message, CancellationToken cancellationToken);
     }
 }

@@ -16,21 +16,25 @@ namespace JobHubBot.Services.HandleServices
         private readonly ITelegramBotClient _botClient;
         private readonly IStringLocalizer<BotLocalizer> _stringLocalizer;
         private readonly IStateManagementService _stateManagementService;
+        private readonly ICacheDbService _cacheDbService;
         public MenuServiceHandler(
             ITelegramBotClient botClient,
             IStringLocalizer<BotLocalizer> stringLocalizer,
-            IStateManagementService stateManagementService)
+            IStateManagementService stateManagementService,
+            ICacheDbService cacheDbService)
         {
             _botClient = botClient;
             _stringLocalizer = stringLocalizer;
             _stateManagementService = stateManagementService;
+            _cacheDbService = cacheDbService;
         }
 
         public async Task ClickStartCommand(long Id, User? user, CancellationToken cancellationToken)
         {
             if (user == null)
             {
-                var keyboardMarkup = KeyboardsMaster.CreateReplyKeyboardMarkup(new List<string>() { Language.uz.ToString(), Language.en.ToString(), Language.ru.ToString() });
+                var keyboardMarkup = KeyboardsMaster.CreateReplyKeyboardMarkup(new List<string>() 
+                                            { Language.uz.ToString(), Language.en.ToString(), Language.ru.ToString() });
                 await _botClient.SendTextMessageAsync(
                     chatId: Id,
                     text: _stringLocalizer["choose_language"],
@@ -49,11 +53,9 @@ namespace JobHubBot.Services.HandleServices
         {
             var keyboardMarkup = KeyboardsMaster.CreateReplyKeyboardMarkup(new List<string>()
             {
-                _stringLocalizer["search"],
-                _stringLocalizer["skills"],
-                _stringLocalizer["feedback"],
-                _stringLocalizer["settings"],
-                _stringLocalizer["contact"]
+                _stringLocalizer["Feedback"],
+                _stringLocalizer["Settings"],
+                _stringLocalizer["Contact"]
             });
             await _botClient.SendTextMessageAsync(
                 chatId: Id,
@@ -69,6 +71,7 @@ namespace JobHubBot.Services.HandleServices
         {
             var keyboardMarkup = KeyboardsMaster.CreateReplyKeyboardMarkup(new List<string>()
             {
+                _stringLocalizer["change_skill"],
                 _stringLocalizer["change_name"],
                 _stringLocalizer["change_phone"],
                 _stringLocalizer["change_language"],
@@ -125,15 +128,6 @@ namespace JobHubBot.Services.HandleServices
             await _stateManagementService.SetUserState(message.Chat.Id, Enums.StateList.contact);
 
             await RedirectToMainMenuAsync(message.Chat.Id, cancellationToken);
-            return;
-        }
-        
-        public async Task RedirectToSearchMenuAsync(Message message, CancellationToken cancellationToken)
-        {
-            await _botClient.SendTextMessageAsync(
-                chatId: message.Chat.Id,
-                text: "Not Implemented",
-                cancellationToken: cancellationToken);
             return;
         }
     }

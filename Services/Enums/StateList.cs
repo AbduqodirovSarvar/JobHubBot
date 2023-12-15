@@ -2,7 +2,6 @@
 {
     public enum StateList
     {
-        register,
         register_language,
         register_fullname,
         register_contact,

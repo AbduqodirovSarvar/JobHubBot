@@ -22,9 +22,14 @@ namespace JobHubBot.Services.HandleServices
         }
         public async Task ForwardJobMessageForUserAsync(Message message, CancellationToken cancellationToken)
         {
+            var text = message.Text ?? message.Caption;
+            if(text == null)
+            {
+                return;
+            }
             var telegramIds = await _dbContext.Users
                                     .Include(x => x.Skills)
-                                    .Where(user => user.Skills.Any(skill => message.Text!.ToLower().Contains(skill.Name.ToLower())))
+                                    .Where(user => user.Skills.Any(skill => text.ToLower().Contains(skill.Name.ToLower())))
                                     .Select(x => x.TelegramId)
                                     .ToListAsync(cancellationToken);
 

@@ -9,8 +9,6 @@ namespace JobHubBot.Db.Entities
         public long TelegramId { get; set; }
         public string FullName { get; set; } = string.Empty;
         public string Phone { get; set; } = string.Empty;
-        public int SkillId { get; set; }
-        public Skill? Skill { get; set; }
         public Language Language { get; set; } = Language.en;
         public DateTime CreatedTime { get; set; } = DateTime.UtcNow;
 

@@ -23,6 +23,7 @@ namespace JobHubBot.Services.HandleServices
         private readonly IStateManagementService _stateManagementService;
         private readonly IChannelMessageServiceHandler _channelMessageServiceHandler;
         private readonly ISettingsServiceHandler _settingsServiceHandler;
+        private readonly IFeedbackServiceHandler _feedbackService;
 
         public UpdateHandlers(
             ILogger<UpdateHandlers> logger,
@@ -32,7 +33,8 @@ namespace JobHubBot.Services.HandleServices
             ICacheDbService cacheDbService,
             IChannelMessageServiceHandler channelMessageServiceHandler,
             IStateManagementService stateManagementService,
-            ISettingsServiceHandler settingsServiceHandler
+            ISettingsServiceHandler settingsServiceHandler,
+            IFeedbackServiceHandler feedbackServiceHandler
             )
         {
             _logger = logger;
@@ -44,6 +46,7 @@ namespace JobHubBot.Services.HandleServices
             _settingsServiceHandler = settingsServiceHandler;
             _channelMessageServiceHandler = channelMessageServiceHandler;
             _cacheDbService = cacheDbService;
+            _feedbackService = feedbackServiceHandler;
         }
 
         public Task HandleErrorAsync(Exception exception)
@@ -77,7 +80,7 @@ namespace JobHubBot.Services.HandleServices
                 var channel = channelMessage.Chat.Title switch
                 {
                     "Advertisements" => _channelMessageServiceHandler.ForwardMessageToAllUsersAsync(channelMessage, cancellationToken),
-                    _ => _channelMessageServiceHandler.ForwardMessageToAllUsersAsync(channelMessage, cancellationToken)
+                    _ => _channelMessageServiceHandler.ForwardJobMessageForUserAsync(channelMessage, cancellationToken)
                 };
 
                 await channel;
@@ -91,42 +94,60 @@ namespace JobHubBot.Services.HandleServices
 
         private async Task BotOnMessageReceived(Message message, CancellationToken cancellationToken)
         {
+            Task forward;
+            var state = _stateManagementService.GetUserState(message.Chat.Id);
+
             var user = await _cacheDbService.GetObjectAsync<User>(message.Chat.Id.ToString());
             if (user == null)
             {
                 user = await _dbContext.Users.FirstOrDefaultAsync(x => x.TelegramId == message.Chat.Id, cancellationToken);
-                if (user == null)
+                if (message.Text == "/start" || message.Text == "/help")
                 {
                     await _menuServiceHandler.ClickStartCommand(message.Chat.Id, user, cancellationToken);
+                    return;
+                }
+                if (user == null)
+                {
+                    if(state == null)
+                    {
+                        await _menuServiceHandler.ClickStartCommand(message.Chat.Id, user, cancellationToken);
+                        return;
+                    }
+                    forward = state switch
+                    {
+                        StateList.register_language => _registerationService.ReceivedLanguageAsync(message, cancellationToken),
+                        StateList.register_fullname => _registerationService.ReceivedFullNameAsync(message, cancellationToken),
+                        StateList.register_contact => _registerationService.ReceivedUserContactAsync(message, cancellationToken),
+                        _ => _menuServiceHandler.ClickStartCommand(message.Chat.Id, user, cancellationToken)
+                    };
+                    await forward;
                     return;
                 }
                 await _cacheDbService.SetObjectAsync(message.Chat.Id.ToString(), user);
             }
 
-            if (message.Text == "/start" || message.Text == "/help")
-            {
-                await _menuServiceHandler.RedirectToMainMenuAsync(message.Chat.Id, cancellationToken);
-            }
+            
 
-            var state = _stateManagementService.GetUserState(message.Chat.Id) switch
+            forward = state switch
             {
-                StateList.register_language => _registerationService.ReceivedLanguageAsync(message, cancellationToken),
-                StateList.register_fullname => _registerationService.ReceivedFullNameAsync(message, cancellationToken),
-                StateList.register_contact => _registerationService.ReceivedUserContactAsync(message, cancellationToken),
-                StateList.settings when message.Text == "Change fullname" => _settingsServiceHandler.ClickChangeFullNameButtonAsync(message, cancellationToken),
-                StateList.settings when message.Text == "Change phone" => _settingsServiceHandler.ClickChangePhoneNumberAsync(message, cancellationToken),
-                StateList.settings when message.Text == "Change language" => _settingsServiceHandler.ClickChangeLanguageAsync(message, cancellationToken),
-                StateList.settings when message.Text == "Back" => _menuServiceHandler.RedirectToMainMenuAsync(message.Chat.Id, cancellationToken),
+                
+                StateList.settings when message.Text == "change_fullname" => _settingsServiceHandler.ClickChangeFullNameButtonAsync(message, cancellationToken),
+                StateList.settings when message.Text == "change_phone" => _settingsServiceHandler.ClickChangePhoneNumberAsync(message, cancellationToken),
+                StateList.settings when message.Text == "change_language" => _settingsServiceHandler.ClickChangeLanguageAsync(message, cancellationToken),
+                StateList.settings when message.Text == "change_skill" => _settingsServiceHandler.ClickChangeSkillsButtonAsync(message, cancellationToken),
+                StateList.settings when message.Text == "back" => _menuServiceHandler.RedirectToMainMenuAsync(message.Chat.Id, cancellationToken),
                 StateList.settings_change_language => _settingsServiceHandler.ReceivedNewLanguageAsync(message, cancellationToken),
-                StateList.settings_change_phone => _settingsServiceHandler.ClickChangePhoneNumberAsync(message, cancellationToken),
-                StateList.settings_change_fullname => _settingsServiceHandler.ClickChangeFullNameButtonAsync(message, cancellationToken),
+                StateList.settings_change_phone => _settingsServiceHandler.ReceivedNewPhoneNumberAsync(message, cancellationToken),
+                StateList.settings_change_fullname => _settingsServiceHandler.ReceivedNewFullNameAsync(message, cancellationToken),
+                StateList.settings_change_skills when message.Text == "back" => _menuServiceHandler.RedirectToSettingsMenuAsync(message, cancellationToken),
                 StateList.settings_change_skills => _settingsServiceHandler.ReceivedSkillForSettingAsync(message, cancellationToken),
+                StateList.feedback => _feedbackService.ReceivedFeedbackAsync(message, cancellationToken),
                 _ when message.Text == "Settings" => _menuServiceHandler.RedirectToSettingsMenuAsync(message, cancellationToken),
                 _ when message.Text == "Contact" => _menuServiceHandler.RedirectToContactMenuAsync(message, cancellationToken),
                 _ when message.Text == "Feedback" => _menuServiceHandler.RedirectToFeedbackMenuAsync(message, cancellationToken),
                 _ => _menuServiceHandler.RedirectToMainMenuAsync(message.Chat.Id, cancellationToken)
             };
-            await state;
+            await forward;
             return;
         }
 

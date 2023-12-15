@@ -9,7 +9,6 @@ namespace JobHubBot.Interfaces.IDbInterfaces
         DbSet<User> Users { get; set; }
         DbSet<Job> Jobs { get; set; }
         DbSet<Skill> Skills { get; set; }
-        DbSet<UserSkill> UserSkills { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }

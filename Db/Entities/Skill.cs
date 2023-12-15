@@ -7,5 +7,6 @@
         public DateTime CreatedTime { get; set; } = DateTime.UtcNow;
 
         public ICollection<User> Users { get; set; } = new HashSet<User>();
+        public ICollection<Job> Jobs { get; set; } = new HashSet<Job>();
     }
 }
