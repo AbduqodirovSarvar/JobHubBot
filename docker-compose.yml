@@ -10,8 +10,8 @@ services:
       - jobhubdb
       - jubhubredis
     ports:
-      - "8080:80"
-      - "8443:443"
+      - "8080:81"
+      - "8443:8443"
     environment:
       - ConnectionStrings__DefaultConnection=Host=jobhubdb;Port=5432;Database=JoboHubBot;User Id=postgres;Password=12345
       - ConnectionStrings__Redis=jobhubredis:6379
@@ -58,7 +58,7 @@ services:
       - certbot-etc:/etc/letsencrypt
       - ./certbot/webroot:/var/www/html
     ports:
-      - "80:80"
+      - "88:88"
       - "443:443"
     depends_on:
       - jobhubbot
