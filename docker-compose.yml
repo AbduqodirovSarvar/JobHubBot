@@ -10,7 +10,8 @@ services:
       - jobhubdb
       - jubhubredis
     ports:
-      - "8443:8443"
+      - "8080:80"
+      - "8443:443"
     environment:
       - ConnectionStrings__DefaultConnection=Host=jobhubdb;Port=5432;Database=JoboHubBot;User Id=postgres;Password=12345
       - ConnectionStrings__Redis=jobhubredis:6379
@@ -18,7 +19,7 @@ services:
       - BotConfiguration__HostAddress=http://nginx
       - BotConfiguration__SecretKey=qwertyuiop
       - BotConfiguration__Route=/api/bot
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8443
     networks:
       - JoboHub

@@ -26,11 +26,8 @@ application.UseCors(options =>
 application.UseRequestLocalization(application.Services.GetService<IOptions<RequestLocalizationOptions>>().Value);
 
 // HTTP request pipeline configuration.
-if (application.Environment.IsDevelopment())
-{
-    application.UseSwagger();
-    application.UseSwaggerUI();
-}
+application.UseSwagger();
+application.UseSwaggerUI();
 
 application.UseRouting();
 
