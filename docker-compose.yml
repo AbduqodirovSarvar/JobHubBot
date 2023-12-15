@@ -10,7 +10,7 @@ services:
       - jobhubdb
       - jubhubredis
     ports:
-      - "443:443"
+      - "8443:443"
     environment:
       - ConnectionStrings__DefaultConnection=Host=jobhubdb;Port=5432;Database=JoboHubBot;User Id=postgres;Password=12345
       - ConnectionStrings__Redis=jobhubredis:6379
