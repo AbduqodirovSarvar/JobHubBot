@@ -10,12 +10,12 @@ services:
       - jobhubdb
       - jobhubredis
     ports:
-      - "8443:443"
+      - "8443:8443"
     environment:
       - ConnectionStrings__DefaultConnection=Host=jobhubdb;Port=5432;Database=JoboHubBot;User Id=postgres;Password=12345
       - ConnectionStrings__Redis=jobhubredis:6379
       - BotConfiguration__BotToken=6780512045:AAGxGfF7_EwhKKfp4CKufk2x4eZgJ15QJSY
-      - BotConfiguration__HostAddress=https://job.sarvarbekabduqodirov.uz
+      - BotConfiguration__HostAddress=https://job.sarvarbekabduqodirov.uz:8443
       - BotConfiguration__SecretKey=qwertyuiop
       - BotConfiguration__Route=/api/bot
       - ASPNETCORE_ENVIRONMENT=Production
@@ -53,8 +53,7 @@ services:
     image: nginx
     container_name: nginx
     ports:
-      - "80:80"
-      - "443:443"
+      - "8443:8443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/conf.d:/etc/nginx/conf.d
