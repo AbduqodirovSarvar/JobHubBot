@@ -60,10 +60,15 @@ services:
       - /etc/letsencrypt:/etc/letsencrypt
     depends_on:
       - jobhubbot
+    networks:
+      - jobohub_network
 
 volumes:
   jobhubdb_data:
   jobhubredis_data:
+  /etc/letsencrypt:
+  ./nginx/conf.d:
+  ./nginx/nginx.conf:
 
 networks:
   jobohub_network:
