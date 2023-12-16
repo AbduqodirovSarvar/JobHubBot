@@ -8,7 +8,7 @@ services:
     container_name: jobhubbot
     depends_on:
       - jobhubdb
-      - jubhubredis
+      - jobhubredis
     ports:
       - "8443:443"
     environment:
@@ -21,7 +21,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8443
     networks:
-      - JoboHub
+      - jobohub_network
 
   jobhubdb:
     image: postgres:16
@@ -34,25 +34,38 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - data:/var/lib/postgresql/data
+      - jobhubdb_data:/var/lib/postgresql/data
     networks:
-      - JoboHub
+      - jobohub_network
 
-  jubhubredis:
+  jobhubredis:
     image: redis:latest
     restart: always
     container_name: jobhubredis
     ports:
       - "6379:6379"
     volumes:
-      - redis-data:/data
+      - jobhubredis_data:/data
     networks:
-      - JoboHub
+      - jobohub_network
+
+  nginx:
+    image: nginx
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - /etc/letsencrypt:/etc/letsencrypt
+    depends_on:
+      - jobhubbot
 
 volumes:
-  data:
-  redis-data:
+  jobhubdb_data:
+  jobhubredis_data:
 
 networks:
-  JoboHub:
+  jobohub_network:
     driver: bridge
