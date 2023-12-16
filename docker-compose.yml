@@ -12,7 +12,7 @@ services:
     ports:
       - "8443:8443"
     environment:
-      - ConnectionStrings__DefaultConnection=Host=jobhubdb;Port=5432;Database=JoboHubBot;User Id=postgres;Password=12345
+      - ConnectionStrings__DefaultConnection=Host=jobhubdb;Port=5433;Database=JoboHubBot;User Id=postgres;Password=12345
       - ConnectionStrings__Redis=jobhubredis:6379
       - BotConfiguration__BotToken=6780512045:AAGxGfF7_EwhKKfp4CKufk2x4eZgJ15QJSY
       - BotConfiguration__HostAddress=https://job.sarvarbekabduqodirov.uz:8443
@@ -32,7 +32,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 12345
     ports:
-      - "5432:5432"
+      - "5433:5434"
     volumes:
       - jobhubdb_data:/var/lib/postgresql/data
     networks:
