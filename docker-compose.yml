@@ -19,7 +19,7 @@ services:
       - BotConfiguration__SecretKey=qwertyuiop
       - BotConfiguration__Route=/api/bot
       - ASPNETCORE_ENVIRONMENT=Production
-      - ASPNETCORE_URLS=http://+:8443
+      - ASPNETCORE_URLS=https://+:8443
     networks:
       - jobohub_network
 
