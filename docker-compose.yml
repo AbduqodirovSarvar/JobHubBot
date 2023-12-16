@@ -43,7 +43,7 @@ services:
     restart: always
     container_name: jobhubredis
     ports:
-      - "6379:6379"
+      - "6377:6378"
     volumes:
       - jobhubredis_data:/data
     networks:
