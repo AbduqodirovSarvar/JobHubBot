@@ -57,8 +57,8 @@ services:
     ports:
       - "443:8443"
     volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - /etc/letsencrypt:/etc/letsencrypt  # Mount SSL certificates as a volume
+    - ./nginx/conf.d:/etc/nginx/conf.d
+    - /etc/letsencrypt:/etc/letsencrypt  # Mount SSL certificates as a volume
     depends_on:
       - jobhubbot
     networks:
