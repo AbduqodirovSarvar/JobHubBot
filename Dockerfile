@@ -1,5 +1,3 @@
-#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
 EXPOSE 80
@@ -19,4 +17,9 @@ RUN dotnet publish "JobHubBot.csproj" -c Release -o /app/publish /p:UseAppHost=f
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+# Copy SSL certificates to the app directory
+COPY ./certificates/fullchain.pem .
+COPY ./certificates/privkey.pem .
+
 ENTRYPOINT ["dotnet", "JobHubBot.dll"]
