@@ -18,8 +18,4 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
-# Copy SSL certificates to the app directory
-COPY ./certificates/fullchain.pem .
-COPY ./certificates/privkey.pem .
-
 ENTRYPOINT ["dotnet", "JobHubBot.dll"]
