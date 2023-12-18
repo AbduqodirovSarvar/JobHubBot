@@ -50,19 +50,19 @@ services:
       - jobohub_network
 
   nginx:
-  build:
-    context: ./nginx
-    dockerfile: Dockerfile
-  container_name: nginx
-  ports:
-    - "443:8443"
-  volumes:
-    - ./nginx/conf.d:/etc/nginx/conf.d
-    - /etc/letsencrypt:/etc/letsencrypt  # Mount SSL certificates as a volume
-  depends_on:
-    - jobhubbot
-  networks:
-    - jobohub_network
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: nginx
+    ports:
+      - "443:8443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - /etc/letsencrypt:/etc/letsencrypt  # Mount SSL certificates as a volume
+    depends_on:
+      - jobhubbot
+    networks:
+      - jobohub_network
 
 
 volumes:
