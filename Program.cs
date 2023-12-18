@@ -10,7 +10,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using System;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,6 +29,14 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
 {
     serverOptions.ConfigureEndpointDefaults(listenOptions =>
     {
+        // Use HTTPS configuration
+        listenOptions.UseHttps("/etc/letsencrypt/fullchain.pem", "/etc/letsencrypt/privkey.pem");
+    });
+
+    // Additional Kestrel configuration options
+    serverOptions.Listen(IPAddress.Any, 443, listenOptions =>
+    {
+        // Use HTTPS for a specific endpoint
         listenOptions.UseHttps("/etc/letsencrypt/fullchain.pem", "/etc/letsencrypt/privkey.pem");
     });
 });
@@ -86,7 +93,6 @@ catch (Exception ex)
 {
     Console.WriteLine($"Error applying migrations: {ex.Message}");
 }
-
 
 app.MapControllers();
 
