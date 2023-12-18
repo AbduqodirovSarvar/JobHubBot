@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using System;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,12 +25,13 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "JobHubBot API", Version = "v1" });
 });
 
-// builder.Host.CreateDefaultBuilder(args)
-//     .ConfigureWebHostDefaults(webBuilder =>
-//     {
-//         webBuilder.UseStartup<Startup>();
-//         webBuilder.UseUrls("http://0.0.0.0:80", "https://0.0.0.0:443");
-//     });
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.ConfigureEndpointDefaults(listenOptions =>
+    {
+        listenOptions.UseHttps("/etc/letsencrypt/fullchain.pem", "/etc/letsencrypt/privkey.pem");
+    });
+});
 
 var app = builder.Build();
 
@@ -41,7 +43,7 @@ app.UseCors(options =>
            .AllowAnyHeader();
 });
 
-app.UseRequestLocalization(app.Services.GetService<IOptions<RequestLocalizationOptions>>().Value);
+app.UseRequestLocalization(app.Services.GetService<IOptions<RequestLocalizationOptions>>()!.Value);
 
 // Configure Swagger
 app.UseSwagger();
@@ -84,7 +86,6 @@ catch (Exception ex)
     Console.WriteLine($"Error applying migrations: {ex.Message}");
 }
 
-app.UseHttpsRedirection();
 
 app.MapControllers();
 

@@ -14,10 +14,9 @@ services:
     environment:
       - ConnectionStrings__DefaultConnection=Host=jobhubdb;Port=5433;Database=JoboHubBot;User Id=postgres;Password=12345
       - ConnectionStrings__Redis=jobhubredis:6379
-      # Consider using Docker secrets for sensitive information like API tokens
       - BotConfiguration__BotToken=6780512045:AAGxGfF7_EwhKKfp4CKufk2x4eZgJ15QJSY
-      - BotConfiguration__HostAddress=https://job.sarvarbekabduqodirov.uz:8443 # Adjust if port mapping for nginx changes
-      - BotConfiguration__SecretKey=qwertyuiop # Use Docker secrets for this too
+      - BotConfiguration__HostAddress=https://job.sarvarbekabduqodirov.uz:8443
+      - BotConfiguration__SecretKey=qwertyuiop
       - BotConfiguration__Route=/api/bot
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=https://+:8443
@@ -33,7 +32,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 12345
     ports:
-      - "5433:5434"
+      - "5433:5432"  # Corrected port mapping
     volumes:
       - jobhubdb_data:/var/lib/postgresql/data
     networks:
@@ -51,12 +50,13 @@ services:
       - jobohub_network
 
   nginx:
-    image: nginx
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
     container_name: nginx
     ports:
-      - "443:8443" # Changed host port to avoid conflict with jobhubbot
+      - "443:8443"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/conf.d:/etc/nginx/conf.d
       - /etc/letsencrypt:/etc/letsencrypt
     depends_on:
@@ -71,6 +71,3 @@ volumes:
 networks:
   jobohub_network:
     driver: bridge
-
-# Define separate file for complete HTTPS configuration with recommended security settings
-# Refer to my previous suggestions for details
