@@ -10,7 +10,7 @@ services:
       - jobhubdb
       - jobhubredis
     ports:
-      - "443:443"
+      - "8443:8443"
     environment:
       - ConnectionStrings__DefaultConnection=Host=jobhubdb;Port=5433;Database=JoboHubBot;User Id=postgres;Password=12345
       - ConnectionStrings__Redis=jobhubredis:6379
@@ -56,7 +56,7 @@ services:
       dockerfile: Dockerfile
     container_name: nginx
     ports:
-      - "443:443"
+      - "443:8443"
     volumes:
     - ./nginx/conf.d:/etc/nginx/conf.d
     - /etc/letsencrypt:/etc/letsencrypt  # Mount SSL certificates as a volume
