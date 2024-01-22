@@ -127,7 +127,7 @@
     <value>Select the desired section</value>
   </data>
   <data name="congrats_after_registeration" xml:space="preserve">
-    <value>Congratulations!\nYou have successfully registered!</value>
+    <value>Congratulations!  You have successfully registered!</value>
   </data>
   <data name="contact_button" xml:space="preserve">
     <value>Contact</value>
@@ -166,10 +166,10 @@
     <value>Change skills</value>
   </data>
   <data name="skill_setting" xml:space="preserve">
-    <value>To add a new skill, type a skill name.\nTo delete a skill, click the skill you want to delete below.</value>
+    <value>To add a new skill, type a skill name.  To delete a skill, click the skill you want to delete below.</value>
   </data>
   <data name="thanks_feedback" xml:space="preserve">
-    <value>Thank you for your attention!\nWe will definitely consider your request!</value>
+    <value>Thank you for your attention!  We will definitely consider your request!</value>
   </data>
   <data name="write_feedback" xml:space="preserve">
     <value>Submit your request here</value>

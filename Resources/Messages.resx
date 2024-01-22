@@ -127,7 +127,7 @@
     <value>Kerakli bo'limni tanlang</value>
   </data>
   <data name="congrats_after_registeration" xml:space="preserve">
-    <value>Tabriklaymiz!\nSiz muvaffaqiyatli ro'yhatdan o'tdingiz!</value>
+    <value>Tabriklaymiz!  Siz muvaffaqiyatli ro'yhatdan o'tdingiz!</value>
   </data>
   <data name="contact_button" xml:space="preserve">
     <value>Aloqa</value>
@@ -166,10 +166,10 @@
     <value>Ko'nikmalarni o'zgartirish</value>
   </data>
   <data name="skill_setting" xml:space="preserve">
-    <value>Yangi ko'nikma qo'shish uchun ko'nikma nomini yozing.\nKo'nikmani o'chirish uchun pastdan o'chirishingiz kerak bo'lgan ko'nikmani bosing.</value>
+    <value>Yangi ko'nikma qo'shish uchun ko'nikma nomini yozing.  Ko'nikmani o'chirish uchun pastdan o'chirishingiz kerak bo'lgan ko'nikmani bosing.</value>
   </data>
   <data name="thanks_feedback" xml:space="preserve">
-    <value>E'tiboringiz uchun raxmat!\nMurojatingizni albatta ko'rib chiqamiz!</value>
+    <value>E'tiboringiz uchun raxmat!  Murojatingizni albatta ko'rib chiqamiz!</value>
   </data>
   <data name="write_feedback" xml:space="preserve">
     <value>Murojatingizni shu yerda yozib jo'nating</value>
