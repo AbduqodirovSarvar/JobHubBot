@@ -11,9 +11,9 @@ services:
       - jobhubdb
       - jobhubredis
     ports:
-      - "5001:5001"
+      - "5000:5000"
     environment:
-      - ASPNETCORE_URLS=http://+:5001
+      - ASPNETCORE_URLS=http://+:5000
       - ConnectionStrings__DefaultConnection=Host=jobhubdb;Port=5432;Database=JoboHubBot;User Id=postgres;Password=12345
       - ConnectionStrings__Redis=jobhubredis:6379
       - BotConfiguration__BotToken=6780512045:AAGxGfF7_EwhKKfp4CKufk2x4eZgJ15QJSY
@@ -49,6 +49,20 @@ services:
     networks:
       - jobohub_network
 
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: nginx
+    ports:
+      - "8080:80"
+      - "8443:443"
+    volumes:
+      - /etc/letsencrypt/:/etc/letsencrypt/  # Mount SSL certificates as a volume
+    depends_on:
+      - jobhubbot
+    networks:
+      - jobohub_network
 
 
 volumes:
