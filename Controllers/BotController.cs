@@ -10,10 +10,8 @@ namespace JobHubBot.Controllers
     [ApiController]
     public class BotController : ControllerBase
     {
-        private readonly IStringLocalizer<Messages> _localization;
-        public BotController(IStringLocalizer<Messages> stringLocalizer)
+        public BotController()
         {
-            _localization = stringLocalizer;
         }
         [HttpPost]
         [Route("bot")]
@@ -30,6 +28,12 @@ namespace JobHubBot.Controllers
                 await handleUpdateService.HandleErrorAsync(ex);
                 return BadRequest(ex.Message);
             }
+        }
+        [HttpGet]
+        [Route("test")]
+        public IActionResult Get()
+        {
+            return Ok("Hello World");
         }
     }
 }

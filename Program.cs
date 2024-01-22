@@ -9,8 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,22 +22,6 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "JobHubBot API", Version = "v1" });
 });
-/*
-builder.WebHost.ConfigureKestrel(serverOptions =>
-{
-    serverOptions.ConfigureEndpointDefaults(listenOptions =>
-    {
-        // Use HTTPS configuration
-        listenOptions.UseHttps("/etc/letsencrypt/fullchain.pem", "/etc/letsencrypt/privkey.pem");
-    });
-
-    // Additional Kestrel configuration options
-    serverOptions.Listen(IPAddress.Any, 443, listenOptions =>
-    {
-        // Use HTTPS for a specific endpoint
-        listenOptions.UseHttps("/etc/letsencrypt/fullchain.pem", "/etc/letsencrypt/privkey.pem");
-    });
-});*/
 
 var app = builder.Build();
 
