@@ -36,7 +36,7 @@ namespace JobHubBot.Services.Configurations
                 allowedUpdates: Array.Empty<UpdateType>(),
                 secretToken: _botConfig.SecretKey,
                 cancellationToken: cancellationToken);
-            await _client.SendTextMessageAsync(chatId: 636809820, text: "Webhook has been set", cancellationToken: cancellationToken);
+            await _client.SendTextMessageAsync(chatId: 636809820, text: $"Webhook has been set: {webhookAddress}", cancellationToken: cancellationToken);
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)

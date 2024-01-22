@@ -15,7 +15,7 @@ namespace JobHubBot.Controllers
         {
             _localization = stringLocalizer;
         }
-        [HttpPost]
+        [HttpPost(Name = "bot")]
         public async Task<IActionResult> Post([FromBody] Update update, [FromServices] UpdateHandlers handleUpdateService, CancellationToken cancellationToken)
         {
             try
