@@ -10,11 +10,7 @@ namespace JobHubBot.Controllers
     [ApiController]
     public class BotController : ControllerBase
     {
-        public BotController()
-        {
-        }
         [HttpPost]
-        [Route("bot")]
         public async Task<IActionResult> Post([FromBody] Update update, [FromServices] UpdateHandlers handleUpdateService, CancellationToken cancellationToken)
         {
             try

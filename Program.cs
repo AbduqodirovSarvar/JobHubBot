@@ -57,7 +57,7 @@ app.UseEndpoints(endpoints =>
     // Map custom route
     endpoints.MapControllerRoute(
         name: "jobohub",
-        pattern: pattern?.ToLower() ?? "/api/bot",
+        pattern: pattern ?? "/api/bot",
         defaults: new { controller = controllerName, action = actionName });
 
     endpoints.MapControllers();

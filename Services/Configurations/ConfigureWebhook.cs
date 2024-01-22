@@ -29,7 +29,7 @@ namespace JobHubBot.Services.Configurations
             using var scope = _serviceProvider.CreateScope();
             var botClient = scope.ServiceProvider.GetRequiredService<ITelegramBotClient>();
 
-            var webhookAddress = $"{_botConfig.HostAddress}{_botConfig.Route}";
+            var webhookAddress = $@"{_botConfig.HostAddress}{_botConfig.Route}";
             _logger.LogInformation("Setting webhook: {WebhookAddress}", webhookAddress);
             await botClient.SetWebhookAsync(
                 url: webhookAddress,
