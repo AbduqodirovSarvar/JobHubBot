@@ -24,7 +24,7 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "JobHubBot API", Version = "v1" });
 });
-
+/*
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {
     serverOptions.ConfigureEndpointDefaults(listenOptions =>
@@ -39,7 +39,7 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
         // Use HTTPS for a specific endpoint
         listenOptions.UseHttps("/etc/letsencrypt/fullchain.pem", "/etc/letsencrypt/privkey.pem");
     });
-});
+});*/
 
 var app = builder.Build();
 

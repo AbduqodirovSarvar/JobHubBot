@@ -6,20 +6,20 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: jobhubbot
+    restart: always
     depends_on:
       - jobhubdb
       - jobhubredis
     ports:
       - "5000:5000"
     environment:
+      - ASPNETCORE_URLS=http://+:5000
       - ConnectionStrings__DefaultConnection=Host=jobhubdb;Port=5433;Database=JoboHubBot;User Id=postgres;Password=12345
       - ConnectionStrings__Redis=jobhubredis:6379
       - BotConfiguration__BotToken=6780512045:AAGxGfF7_EwhKKfp4CKufk2x4eZgJ15QJSY
-      - BotConfiguration__HostAddress=https://job.sarvarbekabduqodirov.uz
+      - BotConfiguration__HostAddress=https://job.sarvarbekabduqodirov.uz:8443
       - BotConfiguration__SecretKey=qwertyuiop
       - BotConfiguration__Route=/api/bot
-      - ASPNETCORE_ENVIRONMENT=Production
-      - ASPNETCORE_URLS=http://+:5000
     networks:
       - jobohub_network
 
