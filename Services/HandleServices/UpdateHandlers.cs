@@ -70,7 +70,6 @@ namespace JobHubBot.Services.HandleServices
 
         public async Task HandleUpdateAsync(Update update, CancellationToken cancellationToken)
         {
-            Console.WriteLine("Catch handler____________________________________________________________________________________________________________________________");
             var handler = update switch
             {
                 { Message: { Chat.Type: ChatType.Channel } channelMessage } => BotOnChannelMessageReceived(channelMessage, cancellationToken),
@@ -126,12 +125,10 @@ namespace JobHubBot.Services.HandleServices
         {
             Task forward;
             var state = _stateManagementService.GetUserState(message.Chat.Id);
-            Console.WriteLine("__________________Cashe_________________________________________________________________________");
             var user = await _cacheDbService.GetObjectAsync<User>(message.Chat.Id.ToString());
             if (user == null)
             {
                 user = await _dbContext.Users.FirstOrDefaultAsync(x => x.TelegramId == message.Chat.Id, cancellationToken);
-                Console.WriteLine("__________________DATABASE_________________________________________________________________________");
                 if (message.Text == "/start" || message.Text == "/help")
                 {
                     await _menuServiceHandler.ClickStartCommand(message.Chat.Id, user, cancellationToken);

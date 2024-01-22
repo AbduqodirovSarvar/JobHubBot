@@ -20,6 +20,7 @@ namespace JobHubBot.Controllers
         {
             try
             {
+                Console.WriteLine("Received Message");
                 await handleUpdateService.HandleUpdateAsync(update, cancellationToken);
                 return Ok();
             }
