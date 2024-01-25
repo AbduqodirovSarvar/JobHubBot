@@ -8,13 +8,14 @@ services:
     container_name: jobhubbot
     restart: always
     depends_on:
-      - jobhubdb
+#      - jobhubdb
       - jobhubredis
     ports:
       - "5000:5000"
     environment:
       - ASPNETCORE_URLS=http://+:5000
-      - ConnectionStrings__DefaultConnection=Host=jobhubdb;Port=5432;Database=JoboHubBot;User Id=postgres;Password=12345;Pooling=true;SSL Mode=Prefer;Trust Server Certificate=True;
+      - ConnectionStrings__SQLiteConnection=Data Source=JoboHubBot.db
+#      - ConnectionStrings__DefaultConnection=Host=jobhubdb;Port=5432;Database=JoboHubBot;User Id=postgres;Password=12345;Pooling=true;SSL Mode=Prefer;Trust Server Certificate=True;
       - ConnectionStrings__Redis=jobhubredis:6379
       - BotConfiguration__BotToken=6780512045:AAGxGfF7_EwhKKfp4CKufk2x4eZgJ15QJSY
       - BotConfiguration__HostAddress=https://job.sarvarbekabduqodirov.uz
@@ -23,20 +24,20 @@ services:
     networks:
       - jobohub_network
 
-  jobhubdb:
-    image: postgres:16.1
-    restart: always
-    container_name: jobhubdb
-    environment:
-      POSTGRES_DB: JoboHubBot
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 12345
-    ports:
-      - "5432:5432"
-    volumes:
-      - jobhubdb_data:/var/lib/postgresql/data
-    networks:
-      - jobohub_network
+#  jobhubdb:
+#    image: postgres:16.1
+#    restart: always
+#    container_name: jobhubdb
+#    environment:
+#      POSTGRES_DB: JoboHubBot
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: 12345
+#    ports:
+#      - "5432:5432"
+#    volumes:
+#      - jobhubdb_data:/var/lib/postgresql/data
+#    networks:
+#      - jobohub_network
 
   jobhubredis:
     image: redis:latest
@@ -64,7 +65,7 @@ services:
       - jobohub_network
 
 volumes:
-  jobhubdb_data:
+#  jobhubdb_data:
   jobhubredis_data:
 
 networks:
