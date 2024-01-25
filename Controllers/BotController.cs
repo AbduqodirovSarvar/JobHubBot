@@ -1,6 +1,8 @@
-﻿using JobHubBot.Resources;
+﻿using JobHubBot.Interfaces.IDbInterfaces;
+using JobHubBot.Resources;
 using JobHubBot.Services.HandleServices;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Telegram.Bot.Types;
 
@@ -10,6 +12,11 @@ namespace JobHubBot.Controllers
     [ApiController]
     public class BotController : ControllerBase
     {
+        private readonly IAppDbContext _context;
+        public BotController(IAppDbContext context)
+        {
+            _context = context;
+        }
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Update update, [FromServices] UpdateHandlers handleUpdateService, CancellationToken cancellationToken)
         {
@@ -27,9 +34,9 @@ namespace JobHubBot.Controllers
         }
         [HttpGet]
         [Route("test")]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
-            return Ok("Hello World");
+            return Ok(await _context.Users.ToListAsync());
         }
     }
 }

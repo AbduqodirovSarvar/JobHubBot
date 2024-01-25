@@ -14,6 +14,12 @@ namespace JobHubBot.Db.DbContexts
         public DbSet<Job> Jobs { get; set; }
         public DbSet<Skill> Skills { get; set; }
 
+        /*protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            base.OnConfiguring(optionsBuilder);
+            optionsBuilder.UseSqlite(@"Data Source=C:\Users\Sarvar\OneDrive\Ishchi stol\JobHubBot\Db\JoboHubBot.db");
+        }*/
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

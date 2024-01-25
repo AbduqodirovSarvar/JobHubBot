@@ -14,7 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Configure services
 builder.Services.AddControllers();
-builder.Services.Services(builder.Configuration); // Assuming there's a method named "Services" in your extension method
+builder.Services.ConfigureServices(builder.Configuration); // Assuming there's a method named "Services" in your extension method
 
 // Swagger configuration
 builder.Services.AddEndpointsApiExplorer();

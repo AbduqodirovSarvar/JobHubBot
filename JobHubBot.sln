@@ -3,7 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34221.43
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobHubBot", "JobHubBot.csproj", "{53CF7B1D-68D3-4385-91FD-74106E816039}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JobHubBot", "JobHubBot.csproj", "{53CF7B1D-68D3-4385-91FD-74106E816039}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nginx", "nginx", "{508CA1A3-31DC-4FE0-87ED-102D0EB9485B}"
+	ProjectSection(SolutionItems) = preProject
+		nginx\Dockerfile = nginx\Dockerfile
+		nginx\nginx.conf = nginx\nginx.conf
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

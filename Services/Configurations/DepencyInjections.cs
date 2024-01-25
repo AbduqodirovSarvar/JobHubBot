@@ -9,7 +9,10 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using SQLitePCL;
 using StackExchange.Redis;
+using System.Collections.Generic;
 using System.Globalization;
 using Telegram.Bot;
 
@@ -17,22 +20,30 @@ namespace JobHubBot.Services.Configurations
 {
     public static class DepencyInjections
     {
-        public static IServiceCollection Services(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection ConfigureServices(this IServiceCollection services, IConfiguration configuration)
         {
             var botConfigurationSection = configuration.GetSection(BotConfiguration.Configuration);
             services.Configure<BotConfiguration>(botConfigurationSection);
             var botConfiguration = botConfigurationSection.Get<BotConfiguration>();
 
-            services.AddDbContext<AppDbContext>(options =>
+            // Add PostgreSQL DbContext
+            /*services.AddDbContext<AppDbContext>(options =>
             {
                 options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
+            });*/
+
+            // Add SQLite DbContext
+            raw.SetProvider(imp: new SQLite3Provider_e_sqlite3());
+            services.AddDbContext<AppDbContext>(options =>
+            {
+                options.UseSqlite(configuration.GetConnectionString("SQLiteConnection"));
             });
+            Batteries.Init();
 
             services.AddScoped<IAppDbContext, AppDbContext>();
 
             services.AddControllers().AddNewtonsoftJson();
-            services.AddSingleton<IConnectionMultiplexer>
-                (ConnectionMultiplexer.Connect(configuration.GetConnectionString("Redis") ?? "localhost"));
+            services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(configuration.GetConnectionString("Redis") ?? "localhost"));
 
             services.AddHttpClient("jobohub")
                 .AddTypedClient<ITelegramBotClient>((httpClient, sp) =>
@@ -62,7 +73,7 @@ namespace JobHubBot.Services.Configurations
 
             services.AddScoped<UpdateHandlers>();
             services.AddScoped<IRegisterationServiceHandler, RegisterationServiceHandler>();
-            services.AddScoped<IMenuServiceHandler,MenuServiceHandler>();
+            services.AddScoped<IMenuServiceHandler, MenuServiceHandler>();
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IChannelMessageServiceHandler, ChannelMessageServiceHandler>();
             services.AddScoped<IFeedbackServiceHandler, FeedbackServiceHandler>();
