@@ -151,7 +151,7 @@ namespace JobHubBot.Services.HandleServices
 
         public async Task ReceivedSkillForSettingAsync(Message message, CancellationToken cancellationToken)
         {
-            var user = await _dbContext.Users.Include(x => x.Skills).FirstOrDefaultAsync(x => x.TelegramId == message.Chat.Id, cancellationToken);
+            var user = await _dbContext.Users.Include(x => x.Skills).ThenInclude(x => x.Skill).FirstOrDefaultAsync(x => x.TelegramId == message.Chat.Id, cancellationToken);
             if (user == null)
             {
                 await _menuServiceHandler.RedirectToSettingsMenuAsync(message, cancellationToken);

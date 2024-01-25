@@ -37,7 +37,7 @@ namespace JobHubBot.Controllers
         public async Task<IActionResult> Get()
         {
             //var user = await _context.Users.Include(x => x.Skills).ToListAsync();
-            return Ok(await _context.Users.Include(x => x.Skills).ThenInclude(x => x.Skill).ToListAsync());
+            return Ok(await _context.Users.Include(x => x.Skills).ThenInclude(x => x.Skill).ThenInclude(x => x.Users).ToListAsync());
         }
     }
 }
