@@ -6,7 +6,7 @@
         public string Name { get; set; } = null!;
         public DateTime CreatedTime { get; set; } = DateTime.UtcNow;
 
-        public ICollection<User> Users { get; set; } = new HashSet<User>();
+        public ICollection<UserSkill> Users { get; set; } = new HashSet<UserSkill>();
         public ICollection<Job> Jobs { get; set; } = new HashSet<Job>();
     }
 }

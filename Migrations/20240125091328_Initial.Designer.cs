@@ -5,39 +5,32 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace JobHubBot.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231214183727_Initial")]
+    [Migration("20240125091328_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.14")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
-
-            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+            modelBuilder.HasAnnotation("ProductVersion", "7.0.14");
 
             modelBuilder.Entity("JobHubBot.Db.Entities.Job", b =>
                 {
                     b.Property<int>("MessageId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("MessageId"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("CreatedTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("TEXT");
 
                     b.Property<long>("FromId")
-                        .HasColumnType("bigint");
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("MessageId");
 
@@ -48,16 +41,14 @@ namespace JobHubBot.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("CreatedTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -71,23 +62,21 @@ namespace JobHubBot.Migrations
                 {
                     b.Property<long>("TelegramId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("TelegramId"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("CreatedTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("FullName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("Language")
-                        .HasColumnType("integer");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Phone")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("TelegramId");
 
@@ -97,13 +86,34 @@ namespace JobHubBot.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("JobHubBot.Db.Entities.UserSkill", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("SkillId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SkillId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserSkill");
+                });
+
             modelBuilder.Entity("JobSkill", b =>
                 {
                     b.Property<int>("JobsMessageId")
-                        .HasColumnType("integer");
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("SkillsId")
-                        .HasColumnType("integer");
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("JobsMessageId", "SkillsId");
 
@@ -112,19 +122,23 @@ namespace JobHubBot.Migrations
                     b.ToTable("JobSkill");
                 });
 
-            modelBuilder.Entity("SkillUser", b =>
+            modelBuilder.Entity("JobHubBot.Db.Entities.UserSkill", b =>
                 {
-                    b.Property<int>("SkillsId")
-                        .HasColumnType("integer");
+                    b.HasOne("JobHubBot.Db.Entities.Skill", "Skill")
+                        .WithMany("Users")
+                        .HasForeignKey("SkillId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<long>("UsersTelegramId")
-                        .HasColumnType("bigint");
+                    b.HasOne("JobHubBot.Db.Entities.User", "User")
+                        .WithMany("Skills")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasKey("SkillsId", "UsersTelegramId");
+                    b.Navigation("Skill");
 
-                    b.HasIndex("UsersTelegramId");
-
-                    b.ToTable("SkillUser");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("JobSkill", b =>
@@ -142,19 +156,14 @@ namespace JobHubBot.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SkillUser", b =>
+            modelBuilder.Entity("JobHubBot.Db.Entities.Skill", b =>
                 {
-                    b.HasOne("JobHubBot.Db.Entities.Skill", null)
-                        .WithMany()
-                        .HasForeignKey("SkillsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Users");
+                });
 
-                    b.HasOne("JobHubBot.Db.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersTelegramId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            modelBuilder.Entity("JobHubBot.Db.Entities.User", b =>
+                {
+                    b.Navigation("Skills");
                 });
 #pragma warning restore 612, 618
         }

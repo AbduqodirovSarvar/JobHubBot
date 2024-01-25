@@ -158,7 +158,7 @@ namespace JobHubBot.Services.HandleServices
                 return;
             }
 
-            var skill = user.Skills.FirstOrDefault(x => x.Name == message.Text);
+            var skill = user.Skills.FirstOrDefault(x => x.Skill.Name == message.Text);
             if (skill == null)
             {
                 var theskill = await _dbContext.Skills.FirstOrDefaultAsync(x => x.Name.ToLower() == message.Text!.ToLower(), cancellationToken);
@@ -171,8 +171,13 @@ namespace JobHubBot.Services.HandleServices
                     await _dbContext.Skills.AddAsync(theskill, cancellationToken);
                     await _dbContext.SaveChangesAsync(cancellationToken);
                 }
+
                 
-                user.Skills.Add(theskill);
+                user.Skills.Add(new UserSkill
+                {
+                    User = user,
+                    Skill = theskill
+                });
             }
             else
             {
@@ -188,7 +193,7 @@ namespace JobHubBot.Services.HandleServices
         public async Task ShowAllSkillsAsync(Message message, CancellationToken cancellationToken)
         {
             var skills = (await _dbContext.Users.Include(x => x.Skills).FirstOrDefaultAsync(x => x.TelegramId == message.Chat.Id, cancellationToken))?.Skills;
-            var keyboardNames = skills?.Select(x => x.Name).ToList() ?? new List<string>();
+            var keyboardNames = skills?.Select(x => x.Skill.Name).ToList() ?? new List<string>();
             keyboardNames.Add(_localizer["back_button"]);
 
             await _botClient.SendTextMessageAsync(

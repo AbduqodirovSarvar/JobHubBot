@@ -40,6 +40,13 @@ namespace JobHubBot.Services.Configurations
             });
             Batteries.Init();
 
+            services.AddControllers()
+                .AddNewtonsoftJson(options =>
+                {
+                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                });
+
+
             services.AddScoped<IAppDbContext, AppDbContext>();
 
             services.AddControllers().AddNewtonsoftJson();

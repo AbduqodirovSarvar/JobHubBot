@@ -35,7 +35,7 @@ namespace JobHubBot.Services.HandleServices
             }
             var telegramIds = await _dbContext.Users
                                     .Include(x => x.Skills)
-                                    .Where(user => user.Skills.Any(skill => text.ToLower().Contains(skill.Name.ToLower())))
+                                    .Where(user => user.Skills.Any(skill => text.ToLower().Contains(skill.Skill.Name.ToLower())))
                                     .Select(x => x.TelegramId)
                                     .ToListAsync(cancellationToken);
 

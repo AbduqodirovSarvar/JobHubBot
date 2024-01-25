@@ -88,11 +88,20 @@ namespace JobHubBot.Services.HandleServices
             {
                 try
                 {
-                    await _botClient.ForwardMessageAsync(
+                    /*await _botClient.ForwardMessageAsync(
                     chatId: groupMessage.ReplyToMessage.ForwardFrom!.Id,
                     fromChatId: groupMessage.ReplyToMessage.Chat.Id,
                     messageId: groupMessage.MessageId,
-                    cancellationToken: cancellationToken);
+                    cancellationToken: cancellationToken);*/
+
+                    await _botClient.SendTextMessageAsync(
+                        replyToMessageId: groupMessage.ReplyToMessage.MessageId,
+                        chatId: groupMessage.ReplyToMessage.From!.Id,
+                        text: groupMessage.Text!,
+                        cancellationToken: cancellationToken
+                        );
+
+                    _logger.LogInformation("Replied message successfully");
                 }
                 catch (Exception ex)
                 {

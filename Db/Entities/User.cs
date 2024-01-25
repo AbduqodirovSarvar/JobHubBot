@@ -14,6 +14,6 @@ namespace JobHubBot.Db.Entities
         public DateTime CreatedTime { get; set; } = DateTime.UtcNow;
 
         [JsonIgnore] // Add this attribute to break the circular reference
-        public ICollection<Skill> Skills { get; set; } = new HashSet<Skill>();
+        public ICollection<UserSkill> Skills { get; set; } = new HashSet<UserSkill>();
     }
 }

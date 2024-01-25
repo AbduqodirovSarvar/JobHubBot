@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -16,10 +15,10 @@ namespace JobHubBot.Migrations
                 name: "Jobs",
                 columns: table => new
                 {
-                    MessageId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    FromId = table.Column<long>(type: "bigint", nullable: false),
-                    CreatedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    MessageId = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    FromId = table.Column<long>(type: "INTEGER", nullable: false),
+                    CreatedTime = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -30,10 +29,10 @@ namespace JobHubBot.Migrations
                 name: "Skills",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    CreatedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    CreatedTime = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -44,12 +43,12 @@ namespace JobHubBot.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    TelegramId = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    FullName = table.Column<string>(type: "text", nullable: false),
-                    Phone = table.Column<string>(type: "text", nullable: false),
-                    Language = table.Column<int>(type: "integer", nullable: false),
-                    CreatedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    TelegramId = table.Column<long>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    FullName = table.Column<string>(type: "TEXT", nullable: false),
+                    Phone = table.Column<string>(type: "TEXT", nullable: false),
+                    Language = table.Column<int>(type: "INTEGER", nullable: false),
+                    CreatedTime = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -60,8 +59,8 @@ namespace JobHubBot.Migrations
                 name: "JobSkill",
                 columns: table => new
                 {
-                    JobsMessageId = table.Column<int>(type: "integer", nullable: false),
-                    SkillsId = table.Column<int>(type: "integer", nullable: false)
+                    JobsMessageId = table.Column<int>(type: "INTEGER", nullable: false),
+                    SkillsId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -81,24 +80,26 @@ namespace JobHubBot.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SkillUser",
+                name: "UserSkill",
                 columns: table => new
                 {
-                    SkillsId = table.Column<int>(type: "integer", nullable: false),
-                    UsersTelegramId = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    UserId = table.Column<long>(type: "INTEGER", nullable: false),
+                    SkillId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SkillUser", x => new { x.SkillsId, x.UsersTelegramId });
+                    table.PrimaryKey("PK_UserSkill", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_SkillUser_Skills_SkillsId",
-                        column: x => x.SkillsId,
+                        name: "FK_UserSkill_Skills_SkillId",
+                        column: x => x.SkillId,
                         principalTable: "Skills",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_SkillUser_Users_UsersTelegramId",
-                        column: x => x.UsersTelegramId,
+                        name: "FK_UserSkill_Users_UserId",
+                        column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "TelegramId",
                         onDelete: ReferentialAction.Cascade);
@@ -116,15 +117,20 @@ namespace JobHubBot.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_SkillUser_UsersTelegramId",
-                table: "SkillUser",
-                column: "UsersTelegramId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Users_Phone",
                 table: "Users",
                 column: "Phone",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserSkill_SkillId",
+                table: "UserSkill",
+                column: "SkillId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserSkill_UserId",
+                table: "UserSkill",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -134,7 +140,7 @@ namespace JobHubBot.Migrations
                 name: "JobSkill");
 
             migrationBuilder.DropTable(
-                name: "SkillUser");
+                name: "UserSkill");
 
             migrationBuilder.DropTable(
                 name: "Jobs");

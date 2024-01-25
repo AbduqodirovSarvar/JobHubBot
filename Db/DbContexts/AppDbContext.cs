@@ -29,15 +29,11 @@ namespace JobHubBot.Db.DbContexts
 
             modelBuilder.Entity<User>()
                 .HasMany(x => x.Skills)
-                .WithMany(y => y.Users);
+                .WithOne(y => y.User).HasForeignKey(x => x.UserId);
 
             modelBuilder.Entity<Skill>()
                 .HasMany(x => x.Users)
-                .WithMany(y => y.Skills);
-
-            modelBuilder.Entity<Skill>()
-                .HasMany(x => x.Jobs)
-                .WithMany(y => y.Skills);
+                .WithOne(y => y.Skill).HasForeignKey(x => x.SkillId);
         }
     }
 }

@@ -36,6 +36,7 @@ namespace JobHubBot.Controllers
         [Route("test")]
         public async Task<IActionResult> Get()
         {
+            //var user = await _context.Users.Include(x => x.Skills).ToListAsync();
             return Ok(await _context.Users.Include(x => x.Skills).ToListAsync());
         }
     }
