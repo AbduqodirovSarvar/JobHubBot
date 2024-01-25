@@ -14,7 +14,7 @@ services:
       - "5000:5000"
     environment:
       - ASPNETCORE_URLS=http://+:5000
-      - ConnectionStrings__SQLiteConnection=Data Source=JoboHubBot.db
+      - ConnectionStrings__SQLiteConnection=Data Source=root/DB/JoboHubBot.db
 #      - ConnectionStrings__DefaultConnection=Host=jobhubdb;Port=5432;Database=JoboHubBot;User Id=postgres;Password=12345;Pooling=true;SSL Mode=Prefer;Trust Server Certificate=True;
       - ConnectionStrings__Redis=jobhubredis:6379
       - BotConfiguration__BotToken=6780512045:AAGxGfF7_EwhKKfp4CKufk2x4eZgJ15QJSY

@@ -1,5 +1,6 @@
 ﻿using JobHubBot.Db.Enums;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace JobHubBot.Db.Entities
 {
@@ -12,6 +13,7 @@ namespace JobHubBot.Db.Entities
         public Language Language { get; set; } = Language.en;
         public DateTime CreatedTime { get; set; } = DateTime.UtcNow;
 
+        [JsonIgnore] // Add this attribute to break the circular reference
         public ICollection<Skill> Skills { get; set; } = new HashSet<Skill>();
     }
 }
