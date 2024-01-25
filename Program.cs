@@ -70,6 +70,7 @@ try
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<AppDbContext>();
     context.Database.Migrate();
+    Console.WriteLine($"Migrations applying succesfully completed");
 }
 catch (Exception ex)
 {
